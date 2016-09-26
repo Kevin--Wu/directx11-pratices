@@ -1,1 +1,1 @@
-Here are some DirectX11 Demos for beginners.
+Here are some directX11 demos.
