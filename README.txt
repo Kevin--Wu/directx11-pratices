@@ -1,1 +1,1 @@
-Here are some directX11 demos.
+Here are some d3d11 demos.
