@@ -45,8 +45,9 @@ bool Shader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHAR* p
 	ID3D10Blob* errorMsg = nullptr;
 	ID3D10Blob* vsBuffer = nullptr;
 
-	result = D3DX11CompileFromFile(vsPath, NULL, NULL, "VS", "vs_5_0", 
-		D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, &vsBuffer, &errorMsg, NULL);
+	result = D3DCompileFromFile(vsPath, NULL, NULL, "VS", "vs_5_0", 
+		D3D10_SHADER_ENABLE_STRICTNESS, 0, &vsBuffer, &errorMsg);
+	
 	if (FAILED(result))
 	{
 		if (errorMsg)
@@ -58,8 +59,8 @@ bool Shader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHAR* p
 	}
 		
 	ID3D10Blob* psBuffer = nullptr;
-	result = D3DX11CompileFromFile(psPath, NULL, NULL, "PS", "ps_5_0",
-		D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, &psBuffer, &errorMsg, NULL);
+	result = D3DCompileFromFile(psPath, NULL, NULL, "PS", "ps_5_0",
+		D3D10_SHADER_ENABLE_STRICTNESS, 0, &psBuffer, &errorMsg);
 	if (FAILED(result))
 	{
 		if (errorMsg)

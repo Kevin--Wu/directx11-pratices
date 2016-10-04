@@ -16,9 +16,6 @@
     <Filter Include="Shader Files">
       <UniqueIdentifier>{e35a32f3-96bf-425f-a8aa-fa4c9afeef54}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Third">
-      <UniqueIdentifier>{5df7a118-d052-4869-98df-7a17dce3ca94}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="System.h">
@@ -44,18 +41,6 @@
     </ClInclude>
     <ClInclude Include="Utils.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Third\D3DX11async.h">
-      <Filter>Third</Filter>
-    </ClInclude>
-    <ClInclude Include="Third\D3DX11.h">
-      <Filter>Third</Filter>
-    </ClInclude>
-    <ClInclude Include="Third\D3DX11core.h">
-      <Filter>Third</Filter>
-    </ClInclude>
-    <ClInclude Include="Third\D3DX11tex.h">
-      <Filter>Third</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -3,11 +3,11 @@
 
 #include <d3d11.h>
 #include <fstream>
+#include <D3Dcompiler.h>
 #include <DirectXMath.h>
 using namespace DirectX;
 
 #include "Utils.h"
-#include "Third/d3dx11async.h"
 
 class Shader
 {
