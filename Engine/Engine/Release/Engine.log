@@ -1,0 +1,13 @@
+﻿  Camera.cpp
+  D3D.cpp
+  Graphics.cpp
+  Input.cpp
+  main.cpp
+  Model.cpp
+  Shader.cpp
+  System.cpp
+  Generating code
+  All 166 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  Engine.vcxproj -> F:\Projects\Engine\Release\Engine.exe
+  Engine.vcxproj -> F:\Projects\Engine\Release\Engine.pdb (Full PDB)

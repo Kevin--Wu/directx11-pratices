@@ -1,0 +1,11 @@
+﻿  System.cpp
+  Shader.cpp
+  Model.cpp
+  main.cpp
+  Input.cpp
+  Graphics.cpp
+  D3D.cpp
+  Camera.cpp
+  Generating Code...
+  Engine.vcxproj -> F:\Projects\Engine\Debug\Engine.exe
+  Engine.vcxproj -> F:\Projects\Engine\Debug\Engine.pdb (Full PDB)
