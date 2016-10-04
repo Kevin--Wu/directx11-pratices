@@ -4,6 +4,7 @@
 */*/Debug/
 */*/Release/
 */.vs/
+.vs/
 */*.VC.db
 */*.VC.VC.opendb
 
