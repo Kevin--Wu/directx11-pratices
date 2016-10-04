@@ -1,6 +1,9 @@
 */build/
 */Debug/
 */Release/
+*/*/Debug/
+*/*/Release/
 */.vs/
 */*.VC.db
+*/*.VC.VC.opendb
 

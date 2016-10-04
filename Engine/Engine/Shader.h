@@ -9,6 +9,8 @@ using namespace DirectX;
 
 #include "Utils.h"
 
+#pragma comment(lib, "D3Dcompiler.lib")
+
 class Shader
 {
 private:
