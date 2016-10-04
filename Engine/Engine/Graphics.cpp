@@ -3,6 +3,7 @@
 Graphics::Graphics()
 {
 	mD3D = nullptr;
+	mTimer = nullptr;
 	mModel = nullptr;
 	mCamera = nullptr;
 	mShader = nullptr;
@@ -23,6 +24,8 @@ bool Graphics::Init(HWND hwnd, int width, int height)
 
 	mCamera = new Camera;
 	mCamera->SetPosition(0.0f, 0.0f, -10.0f);
+
+	mTimer = new Timer;
 
 	mModel = new Model;
 	Check(mModel->Init(mD3D->GetDevice()));
@@ -47,6 +50,11 @@ void Graphics::Shutdown()
 		SafeDelete(mModel);
 	}
 
+	if (mTimer)
+	{
+		SafeDelete(mTimer);
+	}
+
 	if (mCamera)
 	{
 		SafeDelete(mCamera);
@@ -61,6 +69,8 @@ void Graphics::Shutdown()
 
 bool Graphics::Frame()
 {
+	mTimer->Tick();
+
 	Check(Render());
 
 	return true;
@@ -68,8 +78,14 @@ bool Graphics::Frame()
 
 bool Graphics::Render()
 {
-	// cute orange color
 	mD3D->BeginScene(1.0f, 0.6f, 0.0f, 1.0f);
+
+	static float angle = 0.0f;
+	angle += mTimer->GetDeltaTime();
+	if (angle >= 6.28f)
+		angle = 0.0f;
+
+	mD3D->SetWorldMatrix(XMMatrixRotationY(angle));
 
 	mCamera->Render();
 	XMFLOAT4X4 world = mD3D->GetWorldMatrix();

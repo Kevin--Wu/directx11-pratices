@@ -22,6 +22,7 @@ bool System::Init()
 	InitWindow(screenWidth, screenHeight);
 	mInput = new Input;
 	mInput->Init();
+
 	mGraphics = new Graphics;
 	Check(mGraphics->Init(mhWnd, screenWidth, screenHeight));
 

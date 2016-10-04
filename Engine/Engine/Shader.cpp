@@ -157,7 +157,7 @@ void Shader::ShutdownShader()
 void Shader::OutputShaderErrorMessage(HWND hwnd, ID3D10Blob* error, WCHAR* path)
 {
 	char* errorInfo = static_cast<char*>(error->GetBufferPointer());
-	unsigned long size = error->GetBufferSize();
+	SIZE_T size = error->GetBufferSize();
 
 	std::ofstream fout("shader_compile_log.txt", std::ios::out);
 	for (unsigned long i = 0; i < size; ++i)

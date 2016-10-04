@@ -24,6 +24,9 @@ public:
 	void BeginScene(float red, float green, float blue, float alpha);
 	void EndScene();
 
+	void SetWorldMatrix(XMFLOAT4X4 world);
+	void SetWorldMatrix(const XMMATRIX& world);
+
 	ID3D11Device* GetDevice() const;
 	ID3D11DeviceContext* GetDeviceContext() const;
 	XMFLOAT4X4 GetWorldMatrix() const;

@@ -71,7 +71,7 @@ bool D3D::Init(HWND hwnd, int screenWidth, int screenHeight, bool vsync, bool fu
 	// Store the dedicated video card memory in megabytes.
 	mVideoCardMemory = static_cast<int>(adapterDesc.DedicatedVideoMemory / 1024 / 1024);
 
-	UINT stringLength;
+	size_t stringLength;
 	// Convert the name of the video card to a character array and store it.
 	int error = wcstombs_s(&stringLength, mVideoCardDescription, 128, adapterDesc.Description, 128);
 	if (error != 0)
@@ -260,6 +260,16 @@ void D3D::EndScene()
 		mSwapChain->Present(1, 0);
 	else
 		mSwapChain->Present(0, 0);
+}
+
+void D3D::SetWorldMatrix(const XMMATRIX& world)
+{
+	XMStoreFloat4x4(&mWorld, world);
+}
+
+void D3D::SetWorldMatrix(XMFLOAT4X4 world)
+{
+	mWorld = world;
 }
 
 ID3D11Device* D3D::GetDevice() const

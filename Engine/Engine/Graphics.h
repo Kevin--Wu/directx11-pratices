@@ -3,6 +3,7 @@
 
 #include <windows.h>
 #include "D3D.h"
+#include "Timer.h"
 #include "Model.h"
 #include "Camera.h"
 #include "Shader.h"
@@ -29,6 +30,7 @@ private:
 private:
 	D3D* mD3D;
 	Model* mModel;
+	Timer* mTimer;
 	Camera* mCamera;
 	Shader* mShader;
 };
