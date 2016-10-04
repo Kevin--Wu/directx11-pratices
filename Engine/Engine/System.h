@@ -18,22 +18,23 @@ public:
 	void Run();
 	void Shutdown();
 
-	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
+	LRESULT CALLBACK MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
 
 private:
 	bool Frame();
-	void InitWindow(int&, int&);
+	void InitWindow(/*out*/int& width, /*out*/int& height);
 	void ShutdownWindow();
 
 private:
-	LPCWSTR mAppName;
-	HINSTANCE mhInstance;
 	HWND mhWnd;
+	WCHAR* mAppName;
+	HINSTANCE mhInstance;
 
 	Input* mInput;
 	Graphics* mGraphics;
 };
 
 static System* gApp = nullptr;
-static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+static LRESULT CALLBACK WndProc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
+
 #endif

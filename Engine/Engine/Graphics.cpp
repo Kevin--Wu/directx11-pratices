@@ -68,21 +68,14 @@ bool Graphics::Frame()
 
 bool Graphics::Render()
 {
+	// cute orange color
 	mD3D->BeginScene(1.0f, 0.6f, 0.0f, 1.0f);
 
 	mCamera->Render();
-	//XMMATRIX view  = mCamera->GetViewMatrix();
-	//XMMATRIX world = mD3D->GetWorldMatrix();
-	//XMMATRIX proj  = mD3D->GetProjMatrix();
+	XMFLOAT4X4 world = mD3D->GetWorldMatrix();
 	XMFLOAT4X4 view = mCamera->GetViewMatrix();
-	XMFLOAT4X4 world;
-	XMFLOAT4X4 proj;
-
-	XMStoreFloat4x4(&world, mD3D->GetWorldMatrix());
-	XMStoreFloat4x4(&proj, mD3D->GetProjMatrix());
-
+	XMFLOAT4X4 proj = mD3D->GetProjMatrix();
 	mModel->Render(mD3D->GetDeviceContext());
-
 	mShader->Render(mD3D->GetDeviceContext(), mModel->GetIndexCount(), world, view, proj);
 
 	mD3D->EndScene();

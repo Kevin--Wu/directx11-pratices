@@ -85,7 +85,7 @@ bool System::Frame()
 	return true;
 }
 
-void System::InitWindow(int& width, int& height)
+void System::InitWindow(/*out*/int& width, /*out*/int& height)
 {
 	mAppName = L"Drimoon";
 	mhInstance = GetModuleHandle(NULL);
@@ -117,9 +117,10 @@ void System::InitWindow(int& width, int& height)
 		dmScreenSettings.dmSize = sizeof(dmScreenSettings);
 		dmScreenSettings.dmPelsWidth = static_cast<unsigned long>(width);
 		dmScreenSettings.dmPelsHeight = static_cast<unsigned long>(height);
-		dmScreenSettings.dmBitsPerPel = 32;
+		dmScreenSettings.dmBitsPerPel = 32; // bpp,r8g8b8a8
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
+		// Changes the settings of the default display device to the specified graphics mode.
 		ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
 
 		posX = posY = 0;
@@ -154,8 +155,6 @@ void System::ShutdownWindow()
 	mhInstance = NULL;
 
 	gApp = nullptr;
-
-	return;
 }
 
 LRESULT CALLBACK System::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
@@ -179,9 +178,9 @@ LRESULT CALLBACK System::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPA
 	}
 }
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK WndProc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 {
-	switch (umessage)
+	switch (umsg)
 	{
 		case WM_DESTROY:
 		{
@@ -196,6 +195,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 		}
 
 		default:
-			return gApp->MessageHandler(hwnd, umessage, wparam, lparam);
+			return gApp->MessageHandler(hwnd, umsg, wparam, lparam);
 	}
 }

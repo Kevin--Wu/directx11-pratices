@@ -3,7 +3,6 @@
 
 #include <d3d11.h>
 #include <DirectXMath.h>
-#include <DirectXPackedVector.h>
 using namespace DirectX;
 
 #include "Utils.h"
@@ -26,8 +25,8 @@ public:
 	void Render(ID3D11DeviceContext* context);
 	void Shutdown();
 
-	int GetVertexCount() { return mVertexCount; }
-	int GetIndexCount() { return mIndexCount; }
+	int GetVertexCount() const { return mVertexCount; }
+	int GetIndexCount() const { return mIndexCount; }
 
 private:
 	bool InitBuffers(ID3D11Device* device);

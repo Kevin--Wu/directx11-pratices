@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-Camera::Camera() : mPosX(0.0f), mPosY(0.0f), mPosZ(0.0f), mRotX(0.0f), mRotY(0.0f), mRotZ(0.0f)
+Camera::Camera() : mPos(0.0f, 0.0f, 0.0f), mRot(0.0f, 0.0f, 0.0f)
 {
 }
 
@@ -14,56 +14,68 @@ Camera::~Camera()
 
 void Camera::SetPosition(float x, float y, float z)
 {
-	mPosX = x;
-	mPosY = y;
-	mPosZ = z;
+	mPos = XMFLOAT3(x, y, z);
 }
 
 void Camera::SetRotation(float x, float y, float z)
 {
-	mRotX = x;
-	mRotY = y;
-	mRotZ = z;
+	mRot = XMFLOAT3(x, y, z);
 }
 
-XMFLOAT3 Camera::GetPosition()
+XMVECTOR Camera::GetPositionXM() const
 {
-	return XMFLOAT3(mPosX, mPosY, mPosZ);
+	return XMLoadFloat3(&mPos);
 }
 
-XMFLOAT3 Camera::GetRotation()
+XMVECTOR Camera::GetRotationXM() const
 {
-	return XMFLOAT3(mRotX, mRotY, mRotZ);
+	return XMLoadFloat3(&mRot);
 }
 
-XMFLOAT4X4 Camera::GetViewMatrix()
+XMMATRIX Camera::GetViewMatrixXM() const
+{
+	return XMLoadFloat4x4(&mView);
+}
+
+XMFLOAT3 Camera::GetPosition() const
+{
+	return mPos;
+}
+
+XMFLOAT3 Camera::GetRotation() const
+{
+	return mRot;
+}
+
+XMFLOAT4X4 Camera::GetViewMatrix() const
 {
 	return mView;
 }
 
+
 void Camera::Render()
 {
+	XMFLOAT4 pos(mPos.x, mPos.y, mPos.z, 0.0f);
 	XMFLOAT4 up(0.0f, 1.0f, 0.0f, 0.0f);
-	XMFLOAT4 pos(mPosX, mPosY, mPosZ, 0.0f);
 	XMFLOAT4 lookAt(0.0f, 0.0f, 1.0f, 0.0f);
 
-	float yaw, pitch, roll;
-	// Set the yaw (Y axis), pitch (X axis), and roll (Z axis) rotations in radians.
-	pitch = mRotX * 0.0174532925f;
-	yaw = mRotY * 0.0174532925f;
-	roll = mRotZ * 0.0174532925f;
-
-	XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
-	XMVECTOR vUp = XMLoadFloat4(&up);
 	XMVECTOR vPos = XMLoadFloat4(&pos);
+	XMVECTOR vUp = XMLoadFloat4(&up);
 	XMVECTOR vLookAt = XMLoadFloat4(&lookAt);
-	// Transform the lookAt and up vector by the rotation matrix so the view is correctly rotated at the origin.
-	vLookAt = XMVector3TransformCoord(vLookAt, rotationMatrix);
+
+	// Set the yaw (Y axis), pitch (X axis), and roll (Z axis) rotations in radians.
+	float pitch = mRot.x * 0.0174532925f;
+	float yaw = mRot.y * 0.0174532925f;
+	float roll = mRot.z * 0.0174532925f;
+	XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
+
 	vUp = XMVector3TransformCoord(vUp, rotationMatrix);
+	vLookAt = XMVector3TransformCoord(vLookAt, rotationMatrix);
 
 	// Translate the rotated camera position to the location of the viewer.
 	vLookAt = vPos + vLookAt;
 
-	// Finally create the view matrix from the three updated vectors.
-	XMStoreFloat4x4(&mView, XMMatrixLookAtLH(vPos, vLookAt, vUp));
+	XMMATRIX viewMatrix = XMMatrixLookAtLH(vPos, vLookAt, vUp);
+
+	XMStoreFloat4x4(&mView, viewMatrix);
 }

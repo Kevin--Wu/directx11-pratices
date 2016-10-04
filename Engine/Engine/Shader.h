@@ -4,7 +4,6 @@
 #include <d3d11.h>
 #include <fstream>
 #include <DirectXMath.h>
-#include <DirectXPackedVector.h>
 using namespace DirectX;
 
 #include "Utils.h"

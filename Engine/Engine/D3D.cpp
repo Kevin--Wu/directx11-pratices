@@ -26,12 +26,9 @@ D3D::~D3D()
 bool D3D::Init(HWND hwnd, int screenWidth, int screenHeight, bool vsync, bool fullscreen,
 	float screenDepth, float screenNear)
 {
-	int error;
-
 	mVsyncEnabled = vsync;
 
 	IDXGIFactory* factory = nullptr;
-	// Create a DirectX graphics interface factory.
 	HR(CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory));
 
 	IDXGIAdapter* adapter = nullptr;
@@ -76,7 +73,7 @@ bool D3D::Init(HWND hwnd, int screenWidth, int screenHeight, bool vsync, bool fu
 
 	UINT stringLength;
 	// Convert the name of the video card to a character array and store it.
-	error = wcstombs_s(&stringLength, mVideoCardDescription, 128, adapterDesc.Description, 128);
+	int error = wcstombs_s(&stringLength, mVideoCardDescription, 128, adapterDesc.Description, 128);
 	if (error != 0)
 		return false;
 
@@ -251,12 +248,7 @@ void D3D::Shutdown()
 
 void D3D::BeginScene(float red, float green, float blue, float alpha)
 {
-	float color[4];
-
-	color[0] = red;
-	color[1] = green;
-	color[2] = blue;
-	color[3] = alpha;
+	float color[4] = {red, green, blue, alpha};
 
 	mDeviceContext->ClearRenderTargetView(mRenderTargetView, color);
 	mDeviceContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -270,34 +262,48 @@ void D3D::EndScene()
 		mSwapChain->Present(0, 0);
 }
 
-ID3D11Device* D3D::GetDevice()
+ID3D11Device* D3D::GetDevice() const
 {
 	return mDevice;
 }
 
-ID3D11DeviceContext* D3D::GetDeviceContext()
+ID3D11DeviceContext* D3D::GetDeviceContext() const
 {
 	return mDeviceContext;
 }
 
-XMMATRIX D3D::GetProjMatrix()
+XMMATRIX D3D::GetProjMatrixXM() const
 {
 	return XMLoadFloat4x4(&mProj);
 }
 
-XMMATRIX D3D::GetWorldMatrix()
+XMMATRIX D3D::GetWorldMatrixXM() const
 {
 	return XMLoadFloat4x4(&mWorld);
 }
 
-XMMATRIX D3D::GetOrthoMatrix()
+XMMATRIX D3D::GetOrthoMatrixXM() const
 {
 	return XMLoadFloat4x4(&mOrtho);
 }
 
-void D3D::GetVideoCardInfo(char* cardName, int& memory)
+XMFLOAT4X4 D3D::GetWorldMatrix() const
+{
+	return mWorld;
+}
+
+XMFLOAT4X4 D3D::GetProjMatrix() const
+{
+	return mProj;
+}
+
+XMFLOAT4X4 D3D::GetOrthoMatrix() const
+{
+	return mOrtho;
+}
+
+void D3D::GetVideoCardInfo(char* cardName, int& memory) const
 {
 	strcpy_s(cardName, 128, mVideoCardDescription);
 	memory = mVideoCardMemory;
-	return;
 }

@@ -7,7 +7,9 @@ Note :
 
 Common_vs2015 : D3DApp's framework and tools used for vs2015.
 
-Exercises : Chapter Exercises's answers about the book <Introduction to 3D Game Programming with DirectX11> .
+Exercises : Chapter Exercises's answers about the book <Introduction to 3D Game Programming with DirectX11>.
+
+Engine : Tutorials in http://www.rastertek.com.
 
 Textures : some resources(.dds, .bmp, etc..) used to create texture.
 

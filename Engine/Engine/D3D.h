@@ -7,7 +7,6 @@
 #include <dxgi.h>
 #include <d3d11.h>
 #include <DirectXMath.h>
-#include <DirectXPackedVector.h>
 using namespace DirectX;
 
 #include "Utils.h"
@@ -25,17 +24,21 @@ public:
 	void BeginScene(float red, float green, float blue, float alpha);
 	void EndScene();
 
-	ID3D11Device* GetDevice();
-	ID3D11DeviceContext* GetDeviceContext();
-	XMMATRIX GetProjMatrix();
-	XMMATRIX GetWorldMatrix();
-	XMMATRIX GetOrthoMatrix();
-	void GetVideoCardInfo(char*, int&);
+	ID3D11Device* GetDevice() const;
+	ID3D11DeviceContext* GetDeviceContext() const;
+	XMFLOAT4X4 GetWorldMatrix() const;
+	XMFLOAT4X4 GetProjMatrix() const;
+	XMFLOAT4X4 GetOrthoMatrix() const;
+	XMMATRIX GetWorldMatrixXM() const;
+	XMMATRIX GetProjMatrixXM() const;
+	XMMATRIX GetOrthoMatrixXM() const;
+	void GetVideoCardInfo(char*, int&) const;
 
 private:
 	bool mVsyncEnabled;
 	int mVideoCardMemory;
 	char mVideoCardDescription[128];
+
 	IDXGISwapChain* mSwapChain;
 	ID3D11Device* mDevice;
 	ID3D11DeviceContext* mDeviceContext;
@@ -44,6 +47,7 @@ private:
 	ID3D11DepthStencilState* mDepthStencilState;
 	ID3D11DepthStencilView* mDepthStencilView;
 	ID3D11RasterizerState* mRasterState;
+
 	XMFLOAT4X4 mProj;
 	XMFLOAT4X4 mWorld;
 	XMFLOAT4X4 mOrtho;

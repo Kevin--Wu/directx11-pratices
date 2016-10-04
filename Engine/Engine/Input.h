@@ -11,7 +11,7 @@ public:
 
 	void KeyDown(unsigned int key);
 	void KeyUp(unsigned int key);
-	bool IsKeyDown(unsigned int key);
+	bool IsKeyDown(unsigned int key) const;
 
 private:
 	bool mKeys[256];

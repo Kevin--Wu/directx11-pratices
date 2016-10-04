@@ -28,7 +28,7 @@ void Input::KeyUp(unsigned int key)
 	mKeys[key] = false;
 }
 
-bool Input::IsKeyDown(unsigned int key)
+bool Input::IsKeyDown(unsigned int key) const
 {
 	return mKeys[key];
 }
