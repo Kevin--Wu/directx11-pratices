@@ -4,6 +4,8 @@ Model::Model()
 {
 	mVertexBuffer = nullptr;
 	mIndexBuffer = nullptr;
+
+	mTexture = nullptr;
 }
 
 Model::Model(const Model& other)
@@ -18,6 +20,9 @@ bool Model::Init(ID3D11Device* device)
 {
 	Check(InitBuffers(device));
 
+	mTexture = new Texture;
+	Check(mTexture->Init(device, L"Textures/flare.dds"));
+
 	return true;
 }
 
@@ -28,6 +33,12 @@ void Model::Render(ID3D11DeviceContext* context)
 
 void Model::Shutdown()
 {
+	if (mTexture)
+	{
+		mTexture->Shutdown();
+		SafeDelete(mTexture);
+	}
+
 	ShutdownBuffers();
 }
 
@@ -44,16 +55,20 @@ bool Model::InitBuffers(ID3D11Device* device)
 
 
 	vertices[0].pos = XMFLOAT3(0.0f, 1.412f, 0.0f);  // Top middle.
-	vertices[0].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	//vertices[0].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	vertices[0].tex = XMFLOAT2(0.0f, 0.0f);
 
 	vertices[1].pos = XMFLOAT3(-1.73f, -1.412f, -1.0f);  // Bottom left.
-	vertices[1].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	//vertices[1].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	vertices[1].tex = XMFLOAT2(1.0f, 0.0f);
 
 	vertices[2].pos = XMFLOAT3(0.0f, -1.412f, 2.0f);  // Bottom middile
-	vertices[2].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	//vertices[2].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	vertices[2].tex = XMFLOAT2(0.0f, 0.1f);
 
 	vertices[3].pos = XMFLOAT3(1.73f, -1.412f, -1.0f);  // Bottom right.
-	vertices[3].color = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+	//vertices[3].color = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+	vertices[3].tex = XMFLOAT2(1.0f, 0.1f);
 
 	indices[0] = 1; indices[1] = 0; indices[2] = 2;
 	indices[3] = 2; indices[4] = 0; indices[5] = 3;
@@ -113,4 +128,9 @@ void Model::ShutdownBuffers()
 {
 	ReleaseCOM(mVertexBuffer);
 	ReleaseCOM(mIndexBuffer);
+}
+
+ID3D11ShaderResourceView* Model::GetTexture() const
+{
+	return mTexture->GetTexture();
 }

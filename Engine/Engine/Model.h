@@ -6,6 +6,7 @@
 using namespace DirectX;
 
 #include "Utils.h"
+#include "Texture.h"
 
 class Model
 {
@@ -13,7 +14,8 @@ private:
 	struct Vertex
 	{
 		XMFLOAT3 pos;
-		XMFLOAT4 color;
+		//XMFLOAT4 color;
+		XMFLOAT2 tex;
 	};
 
 public:
@@ -27,6 +29,7 @@ public:
 
 	int GetVertexCount() const { return mVertexCount; }
 	int GetIndexCount() const { return mIndexCount; }
+	ID3D11ShaderResourceView* GetTexture() const;
 
 private:
 	bool InitBuffers(ID3D11Device* device);
@@ -38,6 +41,8 @@ private:
 	ID3D11Buffer* mIndexBuffer;
 	int mVertexCount;
 	int mIndexCount;
+
+	Texture* mTexture;
 };
 
 #endif

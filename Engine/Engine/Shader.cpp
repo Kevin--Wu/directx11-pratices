@@ -18,15 +18,16 @@ Shader::~Shader()
 
 bool Shader::Init(HWND hwnd, ID3D11Device* device)
 {
-	Check(InitShader(hwnd, device, L"Shaders/color.vs", L"Shaders/color.ps"));
+	//Check(InitShader(hwnd, device, L"Shaders/color.vs", L"Shaders/color.ps"));
+	Check(InitShader(hwnd, device, L"Shaders/texture.vs", L"Shaders/texture.ps"));
 
 	return true;
 }
 
 bool Shader::Render(ID3D11DeviceContext* context, int indexCount, XMFLOAT4X4 world, 
-	XMFLOAT4X4 view, XMFLOAT4X4 proj)
+	XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture)
 {
-	Check(SetShaderParameters(context, world, view, proj));
+	Check(SetShaderParameters(context, world, view, proj, texture));
 
 	RenderShader(context, indexCount);
 
@@ -83,9 +84,17 @@ bool Shader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHAR* p
 	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[0].InstanceDataStepRate = 0;
 
-	polygonLayout[1].SemanticName = "COLOR";
+	//polygonLayout[1].SemanticName = "COLOR";
+	//polygonLayout[1].SemanticIndex = 0;
+	//polygonLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	//polygonLayout[1].InputSlot = 0;
+	//polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	//polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	//polygonLayout[1].InstanceDataStepRate = 0;
+
+	polygonLayout[1].SemanticName = "TEXCOORD";
 	polygonLayout[1].SemanticIndex = 0;
-	polygonLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
 	polygonLayout[1].InputSlot = 0;
 	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
@@ -113,7 +122,7 @@ bool Shader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHAR* p
 }
 
 bool Shader::SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world,
-	XMFLOAT4X4 view, XMFLOAT4X4 proj)
+	XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture)
 {
 	XMMATRIX w = XMMatrixTranspose(XMLoadFloat4x4(&world));
 	XMMATRIX v = XMMatrixTranspose(XMLoadFloat4x4(&view));
@@ -132,6 +141,8 @@ bool Shader::SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world,
 
 	context->Unmap(mMatrixBuffer, 0);
 	context->VSSetConstantBuffers(0, 1, &mMatrixBuffer);
+
+	context->PSSetShaderResources(0, 1, &texture);
 
 	return true;
 }

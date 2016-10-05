@@ -27,7 +27,8 @@ public:
 	~Shader();
 
 	bool Init(HWND hwnd, ID3D11Device* device);
-	bool Render(ID3D11DeviceContext* context, int indexCount, XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj);
+	// bool Render(ID3D11DeviceContext* context, int indexCount, XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj);
+	bool Render(ID3D11DeviceContext* context, int indexCount, XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture);
 	void Shutdown();
 
 private:
@@ -36,8 +37,8 @@ private:
 	void ShutdownShader();
 
 	void OutputShaderErrorMessage(HWND hwnd, ID3D10Blob* blob, WCHAR*);
-	bool SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj);
-
+	// bool SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj);
+	bool SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture);
 private:
 	ID3D11VertexShader* mVertexShader;
 	ID3D11PixelShader* mPixelShader;

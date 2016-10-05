@@ -16,6 +16,9 @@
     <Filter Include="Shader Files">
       <UniqueIdentifier>{e35a32f3-96bf-425f-a8aa-fa4c9afeef54}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Third">
+      <UniqueIdentifier>{6f4b89ab-1d9f-4c58-b623-5eecdd4ffdb5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="System.h">
@@ -44,6 +47,12 @@
     </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\DDSTextureLoader.h">
+      <Filter>Third</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -74,12 +83,24 @@
     <ClCompile Include="Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Third\DDSTextureLoader.cpp">
+      <Filter>Third</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\color.ps">
       <Filter>Shader Files</Filter>
     </None>
     <None Include="Shaders\color.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\texture.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\texture.vs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

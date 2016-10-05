@@ -78,7 +78,7 @@ bool Graphics::Frame()
 
 bool Graphics::Render()
 {
-	mD3D->BeginScene(1.0f, 0.6f, 0.0f, 1.0f);
+	mD3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
 	static float angle = 0.0f;
 	angle += mTimer->GetDeltaTime();
@@ -92,7 +92,7 @@ bool Graphics::Render()
 	XMFLOAT4X4 view = mCamera->GetViewMatrix();
 	XMFLOAT4X4 proj = mD3D->GetProjMatrix();
 	mModel->Render(mD3D->GetDeviceContext());
-	mShader->Render(mD3D->GetDeviceContext(), mModel->GetIndexCount(), world, view, proj);
+	mShader->Render(mD3D->GetDeviceContext(), mModel->GetIndexCount(), world, view, proj, mModel->GetTexture());
 
 	mD3D->EndScene();
 
