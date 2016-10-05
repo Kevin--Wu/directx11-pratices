@@ -16,6 +16,7 @@ private:
 		XMFLOAT3 pos;
 		//XMFLOAT4 color;
 		XMFLOAT2 tex;
+		XMFLOAT3 normal;
 	};
 
 public:

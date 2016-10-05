@@ -47,33 +47,69 @@ bool Model::InitBuffers(ID3D11Device* device)
 	Vertex* vertices;
 	unsigned long* indices;
 
-	mVertexCount = 4;
-	mIndexCount = 12;
+	mVertexCount = 24;
+	mIndexCount = 36;
 
 	vertices = new Vertex[mVertexCount];
 	indices = new unsigned long[mIndexCount];
 
+	float w = 1.0f;
+	float h = 1.0f;
+	float d = 1.0f;
 
-	vertices[0].pos = XMFLOAT3(0.0f, 1.412f, 0.0f);  // Top middle.
-	//vertices[0].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	vertices[0].tex = XMFLOAT2(0.0f, 0.0f);
+	// front face
+	vertices[0] = { XMFLOAT3(-w, -h,  d), XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) };
+	vertices[1] = { XMFLOAT3(-w,  h,  d), XMFLOAT2(0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) };
+	vertices[2] = { XMFLOAT3( w,  h,  d), XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) };
+	vertices[3] = { XMFLOAT3( w, -h,  d), XMFLOAT2(1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) };
 
-	vertices[1].pos = XMFLOAT3(-1.73f, -1.412f, -1.0f);  // Bottom left.
-	//vertices[1].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	vertices[1].tex = XMFLOAT2(1.0f, 0.0f);
+	indices[0] = 0; indices[1] = 1; indices[2] = 2;
+	indices[3] = 0; indices[4] = 2; indices[5] = 3;
 
-	vertices[2].pos = XMFLOAT3(0.0f, -1.412f, 2.0f);  // Bottom middile
-	//vertices[2].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	vertices[2].tex = XMFLOAT2(0.0f, 0.1f);
+	// right face
+	vertices[4] = { XMFLOAT3( w, -h,  d), XMFLOAT2(0.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) };
+	vertices[5] = { XMFLOAT3( w,  h,  d), XMFLOAT2(0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) };
+	vertices[6] = { XMFLOAT3( w,  h, -d), XMFLOAT2(1.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) };
+	vertices[7] = { XMFLOAT3( w, -h, -d), XMFLOAT2(1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f) };
 
-	vertices[3].pos = XMFLOAT3(1.73f, -1.412f, -1.0f);  // Bottom right.
-	//vertices[3].color = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-	vertices[3].tex = XMFLOAT2(1.0f, 0.1f);
+	indices[6] = 4; indices[7] = 5;  indices[8] = 6;
+	indices[9] = 4; indices[10] = 6; indices[11] = 7;
 
-	indices[0] = 1; indices[1] = 0; indices[2] = 2;
-	indices[3] = 2; indices[4] = 0; indices[5] = 3;
-	indices[6] = 3; indices[7] = 0; indices[8] = 1;
-	indices[9] = 1; indices[10] = 2; indices[11] = 3;
+	// back face
+	vertices[8]  = { XMFLOAT3( w, -h, -d), XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) };
+	vertices[9]  = { XMFLOAT3( w,  h, -d), XMFLOAT2(0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) };
+	vertices[10] = { XMFLOAT3(-w,  h, -d), XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) };
+	vertices[11] = { XMFLOAT3(-w, -h, -d), XMFLOAT2(1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) };
+
+	indices[12] = 8; indices[13] = 10;  indices[14] = 9;
+	indices[15] = 8; indices[16] = 11; indices[17] = 10;
+
+	// left face
+	vertices[12] = { XMFLOAT3(-w, -h, -d), XMFLOAT2(0.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) };
+	vertices[13] = { XMFLOAT3(-w,  h, -d), XMFLOAT2(0.0f, 0.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) };
+	vertices[14] = { XMFLOAT3(-w,  h,  d), XMFLOAT2(1.0f, 0.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) };
+	vertices[15] = { XMFLOAT3(-w, -h,  d), XMFLOAT2(1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f) };
+
+	indices[18] = 12; indices[19] = 14;  indices[20] = 13;
+	indices[21] = 12; indices[22] = 15;  indices[23] = 14;
+
+	// top face
+	vertices[16] = { XMFLOAT3(-w,  h,  d), XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) };
+	vertices[17] = { XMFLOAT3(-w,  h, -d), XMFLOAT2(0.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) };
+	vertices[18] = { XMFLOAT3( w,  h, -d), XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) };
+	vertices[19] = { XMFLOAT3( w,  h,  d), XMFLOAT2(1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) };
+
+	indices[24] = 16; indices[25] = 17;  indices[26] = 18;
+	indices[27] = 16; indices[28] = 18;  indices[29] = 19;
+
+	// bottom face
+	vertices[20] = { XMFLOAT3(-w, -h,  d), XMFLOAT2(0.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) };
+	vertices[21] = { XMFLOAT3(-w, -h, -d), XMFLOAT2(0.0f, 0.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) };
+	vertices[22] = { XMFLOAT3( w, -h, -d), XMFLOAT2(1.0f, 0.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) };
+	vertices[23] = { XMFLOAT3( w, -h,  d), XMFLOAT2(1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) };
+
+	indices[24] = 20; indices[25] = 21;  indices[26] = 22;
+	indices[27] = 20; indices[28] = 22;  indices[29] = 23;
 
 	D3D11_BUFFER_DESC vbDesc;
 	vbDesc.Usage = D3D11_USAGE_DEFAULT;

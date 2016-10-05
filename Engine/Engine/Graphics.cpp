@@ -5,6 +5,7 @@ Graphics::Graphics()
 	mD3D = nullptr;
 	mTimer = nullptr;
 	mModel = nullptr;
+	mLight = nullptr;
 	mCamera = nullptr;
 	mShader = nullptr;
 }
@@ -26,6 +27,10 @@ bool Graphics::Init(HWND hwnd, int width, int height)
 	mCamera->SetPosition(0.0f, 0.0f, -10.0f);
 
 	mTimer = new Timer;
+
+	mLight = new Light;
+	mLight->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
+	mLight->SetDiffuseDir(0.0, 1.0f, 1.0f);
 
 	mModel = new Model;
 	Check(mModel->Init(mD3D->GetDevice()));
@@ -53,6 +58,11 @@ void Graphics::Shutdown()
 	if (mTimer)
 	{
 		SafeDelete(mTimer);
+	}
+
+	if (mLight)
+	{
+		SafeDelete(mLight);
 	}
 
 	if (mCamera)
@@ -85,14 +95,20 @@ bool Graphics::Render()
 	if (angle >= 6.28f)
 		angle = 0.0f;
 
-	mD3D->SetWorldMatrix(XMMatrixRotationY(angle));
+	XMMATRIX rotate = XMMatrixRotationX(angle) * XMMatrixRotationY(angle) * XMMatrixRotationZ(angle);
+
+	mD3D->SetWorldMatrix(rotate);
 
 	mCamera->Render();
 	XMFLOAT4X4 world = mD3D->GetWorldMatrix();
 	XMFLOAT4X4 view = mCamera->GetViewMatrix();
 	XMFLOAT4X4 proj = mD3D->GetProjMatrix();
+
 	mModel->Render(mD3D->GetDeviceContext());
-	mShader->Render(mD3D->GetDeviceContext(), mModel->GetIndexCount(), world, view, proj, mModel->GetTexture());
+
+	mShader->Render(mD3D->GetDeviceContext(), mModel->GetIndexCount(), 
+		world, view, proj, mModel->GetTexture(), 
+		mLight->GetDiffuseColor(), mLight->GetDiffuseDir());
 
 	mD3D->EndScene();
 

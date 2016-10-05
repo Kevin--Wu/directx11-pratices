@@ -15,16 +15,16 @@ struct PixelIn
 	float3 normal : NORMAL;
 };
 
-float4 PS(PixelIn pin)
+float4 PS(PixelIn pin) : SV_TARGET
 {
 	float4 texColor = mappedSRV.Sample(ss, pin.tex);
 
 	// do or do not normalize dir?
 	float3 dir = -gDiffuseDir;
+
 	float intensity = saturate(dot(dir, pin.normal));
+
 	float4 lightColor = saturate(intensity * gDiffuseColor);
 
-	float4 color = texColor * lightColor;
-
-	return color;
+	return lightColor*texColor;
 }

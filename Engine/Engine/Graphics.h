@@ -5,6 +5,7 @@
 #include "D3D.h"
 #include "Timer.h"
 #include "Model.h"
+#include "Light.h"
 #include "Camera.h"
 #include "Shader.h"
 
@@ -31,6 +32,7 @@ private:
 	D3D* mD3D;
 	Model* mModel;
 	Timer* mTimer;
+	Light* mLight;
 	Camera* mCamera;
 	Shader* mShader;
 };

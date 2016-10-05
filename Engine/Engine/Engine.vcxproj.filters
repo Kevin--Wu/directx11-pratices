@@ -54,6 +54,12 @@
     <ClInclude Include="Third\DDSTextureLoader.h">
       <Filter>Third</Filter>
     </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\dxerr.h">
+      <Filter>Third</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -87,6 +93,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Third\DDSTextureLoader.cpp">
+      <Filter>Third</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Third\dxerr.cpp">
       <Filter>Third</Filter>
     </ClCompile>
   </ItemGroup>

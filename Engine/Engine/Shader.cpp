@@ -6,6 +6,7 @@ Shader::Shader()
 	mPixelShader = nullptr;
 	mLayout = nullptr;
 	mMatrixBuffer = nullptr;
+	mLightBuffer = nullptr;
 	mSampleState = nullptr;
 }
 
@@ -20,15 +21,16 @@ Shader::~Shader()
 bool Shader::Init(HWND hwnd, ID3D11Device* device)
 {
 	//Check(InitShader(hwnd, device, L"Shaders/color.vs", L"Shaders/color.ps"));
-	Check(InitShader(hwnd, device, L"Shaders/texture.vs", L"Shaders/texture.ps"));
+	//Check(InitShader(hwnd, device, L"Shaders/texture.vs", L"Shaders/texture.ps"));
+	Check(InitShader(hwnd, device, L"Shaders/light.vs", L"Shaders/light.ps"));
 
 	return true;
 }
 
 bool Shader::Render(ID3D11DeviceContext* context, int indexCount, XMFLOAT4X4 world, 
-	XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture)
+	XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture, XMFLOAT4 lightColor, XMFLOAT3 lightDir)
 {
-	Check(SetShaderParameters(context, world, view, proj, texture));
+	Check(SetShaderParameters(context, world, view, proj, texture, lightColor, lightDir));
 
 	RenderShader(context, indexCount);
 
@@ -76,7 +78,7 @@ bool Shader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHAR* p
 	HR(device->CreateVertexShader(vsBuffer->GetBufferPointer(), vsBuffer->GetBufferSize(), NULL, &mVertexShader));
 	HR(device->CreatePixelShader(psBuffer->GetBufferPointer(), psBuffer->GetBufferSize(), NULL, &mPixelShader));
 
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
+	D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
 	polygonLayout[0].SemanticName = "POSITION";
 	polygonLayout[0].SemanticIndex = 0;
 	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
@@ -101,6 +103,14 @@ bool Shader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHAR* p
 	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[1].InstanceDataStepRate = 0;
 
+	polygonLayout[2].SemanticName = "NORMAL";
+	polygonLayout[2].SemanticIndex = 0;
+	polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[2].InputSlot = 0;
+	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[2].InstanceDataStepRate = 0;
+
 	UINT numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
 	HR(device->CreateInputLayout(polygonLayout, numElements, vsBuffer->GetBufferPointer(),
@@ -118,6 +128,16 @@ bool Shader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHAR* p
 	matrixBufferDesc.StructureByteStride = 0;
 
 	HR(device->CreateBuffer(&matrixBufferDesc, NULL, &mMatrixBuffer));
+
+	D3D11_BUFFER_DESC lightBufferDesc;
+	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	lightBufferDesc.ByteWidth = sizeof(LightBuffer);
+	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	lightBufferDesc.MiscFlags = 0;
+	lightBufferDesc.StructureByteStride = 0;
+
+	HR(device->CreateBuffer(&lightBufferDesc, NULL, &mLightBuffer));
 
 	D3D11_SAMPLER_DESC samplerDesc;
 	// Create a texture sampler state description.
@@ -141,25 +161,30 @@ bool Shader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHAR* p
 }
 
 bool Shader::SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world,
-	XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture)
+	XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture, XMFLOAT4 lightColor, XMFLOAT3 lightDir)
 {
 	XMMATRIX w = XMMatrixTranspose(XMLoadFloat4x4(&world));
 	XMMATRIX v = XMMatrixTranspose(XMLoadFloat4x4(&view));
 	XMMATRIX p = XMMatrixTranspose(XMLoadFloat4x4(&proj));
 
 	D3D11_MAPPED_SUBRESOURCE mappedRes;
-	MatrixBuffer* dataPtr;
-
 	HR(context->Map(mMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedRes));
-
-	dataPtr = (MatrixBuffer*)mappedRes.pData;
-
-	XMStoreFloat4x4(&(dataPtr->worldMatrix), w);
-	XMStoreFloat4x4(&(dataPtr->viewMatrix), v);
-	XMStoreFloat4x4(&(dataPtr->projMatrix), p);
-
+	MatrixBuffer* mdataPtr = (MatrixBuffer*)mappedRes.pData;
+	XMStoreFloat4x4(&(mdataPtr->worldMatrix), w);
+	XMStoreFloat4x4(&(mdataPtr->viewMatrix), v);
+	XMStoreFloat4x4(&(mdataPtr->projMatrix), p);
 	context->Unmap(mMatrixBuffer, 0);
 	context->VSSetConstantBuffers(0, 1, &mMatrixBuffer);
+
+
+	ZeroMemory(&mappedRes, sizeof(D3D11_MAPPED_SUBRESOURCE));	
+	HR(context->Map(mLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedRes));
+	LightBuffer* ldataPtr = (LightBuffer*)mappedRes.pData;
+	ldataPtr->diffuseColor = lightColor;
+	ldataPtr->diffuseDir = lightDir;
+	ldataPtr->padding = 0.0f;
+	context->Unmap(mLightBuffer, 0);
+	context->PSSetConstantBuffers(0, 1, &mLightBuffer);
 
 	context->PSSetShaderResources(0, 1, &texture);
 
@@ -180,6 +205,7 @@ void Shader::RenderShader(ID3D11DeviceContext* context, int indexCount)
 void Shader::ShutdownShader()
 {
 	ReleaseCOM(mMatrixBuffer);
+	ReleaseCOM(mLightBuffer);
 	ReleaseCOM(mLayout);
 	ReleaseCOM(mPixelShader);
 	ReleaseCOM(mVertexShader);
