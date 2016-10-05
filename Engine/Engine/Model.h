@@ -2,6 +2,7 @@
 #define _MODEL_H_
 
 #include <d3d11.h>
+#include <fstream>
 #include <DirectXMath.h>
 using namespace DirectX;
 
@@ -14,9 +15,16 @@ private:
 	struct Vertex
 	{
 		XMFLOAT3 pos;
-		//XMFLOAT4 color;
 		XMFLOAT2 tex;
 		XMFLOAT3 normal;
+	};
+
+	// our own 3D Model format file( described in Model/Cube.txt )
+	struct ModelType
+	{
+		float x, y, z;
+		float u, v;
+		float nx, ny, nz;
 	};
 
 public:
@@ -24,7 +32,7 @@ public:
 	Model(const Model& other);
 	~Model();
 
-	bool Init(ID3D11Device* device);
+	bool Init(ID3D11Device* device, char* modelName, WCHAR* textureName);
 	void Render(ID3D11DeviceContext* context);
 	void Shutdown();
 
@@ -37,6 +45,9 @@ private:
 	void RenderBuffers(ID3D11DeviceContext* context);
 	void ShutdownBuffers();
 
+	bool LoadModel(char*);
+	void ReleaseModel();
+
 private:
 	ID3D11Buffer* mVertexBuffer;
 	ID3D11Buffer* mIndexBuffer;
@@ -44,6 +55,7 @@ private:
 	int mIndexCount;
 
 	Texture* mTexture;
+	ModelType* mModelData;
 };
 
 #endif

@@ -33,7 +33,7 @@ bool Graphics::Init(HWND hwnd, int width, int height)
 	mLight->SetDiffuseDir(0.0, 1.0f, 1.0f);
 
 	mModel = new Model;
-	Check(mModel->Init(mD3D->GetDevice()));
+	Check(mModel->Init(mD3D->GetDevice(), "Model/Cube.txt", L"Textures/flare.dds"));
 
 	mShader = new Shader;
 	Check(mShader->Init(hwnd, mD3D->GetDevice()));

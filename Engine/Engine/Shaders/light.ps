@@ -26,5 +26,5 @@ float4 PS(PixelIn pin) : SV_TARGET
 
 	float4 lightColor = saturate(intensity * gDiffuseColor);
 
-	return lightColor*texColor;
+	return lightColor * texColor;
 }
