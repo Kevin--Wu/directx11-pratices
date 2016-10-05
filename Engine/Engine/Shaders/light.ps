@@ -1,0 +1,30 @@
+cbuffer LightBuffer
+{
+	float4 gDiffuseColor;
+	float3 gDiffuseDir;
+	float  padding;
+}
+
+Texture2D mappedSRV;
+SamplerState ss;
+
+struct PixelIn
+{
+	float4 pos : SV_POSITION;
+	float2 tex : TEXCOORD0;
+	float3 normal : NORMAL;
+};
+
+float4 PS(PixelIn pin)
+{
+	float4 texColor = mappedSRV.Sample(ss, pin.tex);
+
+	// do or do not normalize dir?
+	float3 dir = -gDiffuseDir;
+	float intensity = saturate(dot(dir, pin.normal));
+	float4 lightColor = saturate(intensity * gDiffuseColor);
+
+	float4 color = texColor * lightColor;
+
+	return color;
+}

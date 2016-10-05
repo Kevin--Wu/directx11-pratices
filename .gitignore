@@ -1,9 +1,13 @@
-*/build/
 */Debug/
 */Release/
 */*/Debug/
 */*/Release/
+*/*/*/Debug/
+*/*/*/Release/
 */.vs/
+*/*/.vs/
 */*.VC.db
+*/*/*.VC.db
 */*.VC.VC.opendb
+*/*/*.VC.VC.opendb
 

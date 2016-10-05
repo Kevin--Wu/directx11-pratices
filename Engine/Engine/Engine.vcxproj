@@ -47,6 +47,8 @@
   <ItemGroup>
     <None Include="Shaders\color.ps" />
     <None Include="Shaders\color.vs" />
+    <None Include="Shaders\light.ps" />
+    <None Include="Shaders\light.vs" />
     <None Include="Shaders\texture.ps" />
     <None Include="Shaders\texture.vs" />
   </ItemGroup>

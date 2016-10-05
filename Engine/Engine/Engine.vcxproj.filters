@@ -103,5 +103,11 @@
     <None Include="Shaders\texture.vs">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="Shaders\light.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\light.vs">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

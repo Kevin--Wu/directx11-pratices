@@ -21,6 +21,13 @@ private:
 		XMFLOAT4X4 projMatrix;
 	};
 
+	struct LightBuffer
+	{
+		XMFLOAT4 diffuseColor;
+		XMFLOAT3 diffuseDir;
+		float  padding;
+	};
+
 public:
 	Shader();
 	Shader(const Shader& other);
@@ -39,11 +46,13 @@ private:
 	void OutputShaderErrorMessage(HWND hwnd, ID3D10Blob* blob, WCHAR*);
 	// bool SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj);
 	bool SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture);
+
 private:
 	ID3D11VertexShader* mVertexShader;
 	ID3D11PixelShader* mPixelShader;
 	ID3D11InputLayout* mLayout;
 	ID3D11Buffer* mMatrixBuffer;
+	ID3D11SamplerState* mSampleState;
 };
 
 #endif

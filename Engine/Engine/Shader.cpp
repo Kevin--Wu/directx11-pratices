@@ -6,6 +6,7 @@ Shader::Shader()
 	mPixelShader = nullptr;
 	mLayout = nullptr;
 	mMatrixBuffer = nullptr;
+	mSampleState = nullptr;
 }
 
 Shader::Shader(const Shader& other)
@@ -118,6 +119,24 @@ bool Shader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHAR* p
 
 	HR(device->CreateBuffer(&matrixBufferDesc, NULL, &mMatrixBuffer));
 
+	D3D11_SAMPLER_DESC samplerDesc;
+	// Create a texture sampler state description.
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	HR(device->CreateSamplerState(&samplerDesc, &mSampleState));
+
 	return true;
 }
 
@@ -153,6 +172,7 @@ void Shader::RenderShader(ID3D11DeviceContext* context, int indexCount)
 
 	context->VSSetShader(mVertexShader, NULL, 0);
 	context->PSSetShader(mPixelShader, NULL, 0);
+	context->PSSetSamplers(0, 1, &mSampleState);
 
 	context->DrawIndexed(indexCount, 0, 0);
 }

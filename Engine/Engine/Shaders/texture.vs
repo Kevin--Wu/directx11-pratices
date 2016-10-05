@@ -20,7 +20,7 @@ struct VertexOut
 VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
-	vout.pos.w = 1.0f;
+	vin.pos.w = 1.0f;
 	vout.pos = mul(vin.pos, world);
 	vout.pos = mul(vout.pos, view);
 	vout.pos = mul(vout.pos, proj);
