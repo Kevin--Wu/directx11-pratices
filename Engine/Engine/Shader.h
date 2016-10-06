@@ -26,7 +26,14 @@ private:
 		XMFLOAT4 ambientColor;
 		XMFLOAT4 diffuseColor;
 		XMFLOAT3 diffuseDir;
-		float  padding;
+		float    specularPower;
+		XMFLOAT4 specularColor;
+	};
+
+	struct CameraBuffer
+	{
+		XMFLOAT3 cameraPos;
+		float padding;
 	};
 
 public:
@@ -35,7 +42,7 @@ public:
 	~Shader();
 
 	bool Init(HWND hwnd, ID3D11Device* device);
-	bool Render(ID3D11DeviceContext* context, int indexCount, XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture, XMFLOAT4 ambientColor, XMFLOAT4 lightColor, XMFLOAT3 lightDir);
+	bool Render(ID3D11DeviceContext* context, int indexCount, XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture, XMFLOAT4 ambientColor, XMFLOAT4 lightColor, XMFLOAT3 lightDir, float specularPower, XMFLOAT4 specularColor, XMFLOAT3 cameraPos);
 	void Shutdown();
 
 private:
@@ -45,7 +52,7 @@ private:
 
 	void OutputShaderErrorMessage(HWND hwnd, ID3D10Blob* blob, WCHAR*);
 
-	bool SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture, XMFLOAT4 ambientColor, XMFLOAT4 lightColor, XMFLOAT3 lightDir);
+	bool SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture, XMFLOAT4 ambientColor, XMFLOAT4 lightColor, XMFLOAT3 lightDir, float specularPower, XMFLOAT4 specularColor, XMFLOAT3 cameraPos);
 
 private:
 	ID3D11VertexShader* mVertexShader;
@@ -53,6 +60,7 @@ private:
 	ID3D11InputLayout* mLayout;
 	ID3D11Buffer* mMatrixBuffer;
 	ID3D11Buffer* mLightBuffer;
+	ID3D11Buffer* mCameraBuffer;
 	ID3D11SamplerState* mSampleState;
 };
 

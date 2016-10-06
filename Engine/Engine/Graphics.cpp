@@ -32,6 +32,8 @@ bool Graphics::Init(HWND hwnd, int width, int height)
 	mLight->SetAmbientColor(0.2f, 0.2f, 0.2f, 1.0f);
 	mLight->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 	mLight->SetDiffuseDir(0.0f, 0.0f, 1.0f);
+	mLight->SetSpecularPower(32.0f);
+	mLight->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	mModel = new Model;
 	Check(mModel->Init(mD3D->GetDevice(), "Model/mayaCube.txt", L"Textures/flare.dds"));
@@ -114,7 +116,8 @@ bool Graphics::Render()
 
 	mShader->Render(mD3D->GetDeviceContext(), mModel->GetIndexCount(), 
 		world, view, proj, mModel->GetTexture(), 
-		mLight->GetAmbientColor(), mLight->GetDiffuseColor(), mLight->GetDiffuseDir());
+		mLight->GetAmbientColor(), mLight->GetDiffuseColor(), mLight->GetDiffuseDir(),
+		mLight->GetSpecularPower(), mLight->GetSpecularColor(), mCamera->GetPosition());
 
 	mD3D->EndScene();
 
