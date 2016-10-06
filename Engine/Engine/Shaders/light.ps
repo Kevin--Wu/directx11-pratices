@@ -1,5 +1,6 @@
 cbuffer LightBuffer
 {
+	float4 gAmbientColor;
 	float4 gDiffuseColor;
 	float3 gDiffuseDir;
 	float  padding;
@@ -19,12 +20,15 @@ float4 PS(PixelIn pin) : SV_TARGET
 {
 	float4 texColor = mappedSRV.Sample(ss, pin.tex);
 
-	// do or do not normalize dir?
-	float3 dir = -gDiffuseDir;
+	float4 lightColor = gAmbientColor;
 
+	float3 dir = -gDiffuseDir;
 	float intensity = saturate(dot(dir, pin.normal));
 
-	float4 lightColor = saturate(intensity * gDiffuseColor);
+	if(intensity > 0.0f)
+		lightColor += intensity * gDiffuseColor;
+
+	lightColor = saturate(lightColor);
 
 	return lightColor * texColor;
 }

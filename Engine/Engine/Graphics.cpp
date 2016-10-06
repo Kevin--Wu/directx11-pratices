@@ -29,11 +29,12 @@ bool Graphics::Init(HWND hwnd, int width, int height)
 	mTimer = new Timer;
 
 	mLight = new Light;
+	mLight->SetAmbientColor(0.2f, 0.2f, 0.2f, 1.0f);
 	mLight->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	mLight->SetDiffuseDir(0.0, 1.0f, 1.0f);
+	mLight->SetDiffuseDir(0.0f, 0.0f, 1.0f);
 
 	mModel = new Model;
-	Check(mModel->Init(mD3D->GetDevice(), "Model/Cube.txt", L"Textures/flare.dds"));
+	Check(mModel->Init(mD3D->GetDevice(), "Model/mayaCube.txt", L"Textures/flare.dds"));
 
 	mShader = new Shader;
 	Check(mShader->Init(hwnd, mD3D->GetDevice()));
@@ -106,9 +107,14 @@ bool Graphics::Render()
 
 	mModel->Render(mD3D->GetDeviceContext());
 
+	XMMATRIX scale = XMMatrixScaling(2.0f, 2.0f, 2.0f);
+	XMMATRIX offset = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+	XMMATRIX newWorld = XMLoadFloat4x4(&world) * scale * offset;
+	XMStoreFloat4x4(&world, newWorld);
+
 	mShader->Render(mD3D->GetDeviceContext(), mModel->GetIndexCount(), 
 		world, view, proj, mModel->GetTexture(), 
-		mLight->GetDiffuseColor(), mLight->GetDiffuseDir());
+		mLight->GetAmbientColor(), mLight->GetDiffuseColor(), mLight->GetDiffuseDir());
 
 	mD3D->EndScene();
 

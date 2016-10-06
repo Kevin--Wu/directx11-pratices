@@ -10,4 +10,5 @@
 */*/*.VC.db
 */*.VC.VC.opendb
 */*/*.VC.VC.opendb
-
+*/x64
+*/*/x64

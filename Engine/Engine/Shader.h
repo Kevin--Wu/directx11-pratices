@@ -23,6 +23,7 @@ private:
 
 	struct LightBuffer
 	{
+		XMFLOAT4 ambientColor;
 		XMFLOAT4 diffuseColor;
 		XMFLOAT3 diffuseDir;
 		float  padding;
@@ -34,7 +35,7 @@ public:
 	~Shader();
 
 	bool Init(HWND hwnd, ID3D11Device* device);
-	bool Render(ID3D11DeviceContext* context, int indexCount, XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture, XMFLOAT4 lightColor, XMFLOAT3 lightDir);
+	bool Render(ID3D11DeviceContext* context, int indexCount, XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture, XMFLOAT4 ambientColor, XMFLOAT4 lightColor, XMFLOAT3 lightDir);
 	void Shutdown();
 
 private:
@@ -44,7 +45,7 @@ private:
 
 	void OutputShaderErrorMessage(HWND hwnd, ID3D10Blob* blob, WCHAR*);
 
-	bool SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture, XMFLOAT4 lightColor, XMFLOAT3 lightDir);
+	bool SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture, XMFLOAT4 ambientColor, XMFLOAT4 lightColor, XMFLOAT3 lightDir);
 
 private:
 	ID3D11VertexShader* mVertexShader;

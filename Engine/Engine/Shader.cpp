@@ -28,9 +28,9 @@ bool Shader::Init(HWND hwnd, ID3D11Device* device)
 }
 
 bool Shader::Render(ID3D11DeviceContext* context, int indexCount, XMFLOAT4X4 world, 
-	XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture, XMFLOAT4 lightColor, XMFLOAT3 lightDir)
+	XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture, XMFLOAT4 ambientColor, XMFLOAT4 lightColor, XMFLOAT3 lightDir)
 {
-	Check(SetShaderParameters(context, world, view, proj, texture, lightColor, lightDir));
+	Check(SetShaderParameters(context, world, view, proj, texture, ambientColor, lightColor, lightDir));
 
 	RenderShader(context, indexCount);
 
@@ -161,7 +161,7 @@ bool Shader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHAR* p
 }
 
 bool Shader::SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world,
-	XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture, XMFLOAT4 lightColor, XMFLOAT3 lightDir)
+	XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView* texture, XMFLOAT4 ambientColor, XMFLOAT4 lightColor, XMFLOAT3 lightDir)
 {
 	XMMATRIX w = XMMatrixTranspose(XMLoadFloat4x4(&world));
 	XMMATRIX v = XMMatrixTranspose(XMLoadFloat4x4(&view));
@@ -180,6 +180,7 @@ bool Shader::SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world,
 	ZeroMemory(&mappedRes, sizeof(D3D11_MAPPED_SUBRESOURCE));	
 	HR(context->Map(mLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedRes));
 	LightBuffer* ldataPtr = (LightBuffer*)mappedRes.pData;
+	ldataPtr->ambientColor = ambientColor;
 	ldataPtr->diffuseColor = lightColor;
 	ldataPtr->diffuseDir = lightDir;
 	ldataPtr->padding = 0.0f;
