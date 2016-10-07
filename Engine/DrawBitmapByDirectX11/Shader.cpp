@@ -7,8 +7,6 @@ Shader::Shader()
 	mLayout = nullptr;
 
 	mMatrixBuffer = nullptr;
-	mLightBuffer = nullptr;
-	mCameraBuffer = nullptr;
 
 	mSampleState = nullptr;
 }
@@ -23,20 +21,17 @@ Shader::~Shader()
 
 bool Shader::Init(HWND hwnd, ID3D11Device* device)
 {
-	//Check(InitShader(hwnd, device, L"Shaders/color.vs", L"Shaders/color.ps"));
-	//Check(InitShader(hwnd, device, L"Shaders/texture.vs", L"Shaders/texture.ps"));
-	Check(InitShader(hwnd, device, L"Shaders/light.vs", L"Shaders/light.ps"));
+
+	Check(InitShader(hwnd, device, L"Shaders/texture.vs", L"Shaders/texture.ps"));
 
 	return true;
 }
 
 bool Shader::Render(ID3D11DeviceContext* context, int indexCount, 
 	XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj, 
-	ID3D11ShaderResourceView* texture, 
-	XMFLOAT4 ambientColor, XMFLOAT4 lightColor, XMFLOAT3 lightDir, float specularPower, XMFLOAT4 specularColor,
-	XMFLOAT3 cameraPos)
+	ID3D11ShaderResourceView* texture)
 {
-	Check(SetShaderParameters(context, world, view, proj, texture, ambientColor, lightColor, lightDir, specularPower, specularColor, cameraPos));
+	Check(SetShaderParameters(context, world, view, proj, texture));
 
 	RenderShader(context, indexCount);
 
@@ -84,7 +79,7 @@ bool Shader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHAR* p
 	HR(device->CreateVertexShader(vsBuffer->GetBufferPointer(), vsBuffer->GetBufferSize(), NULL, &mVertexShader));
 	HR(device->CreatePixelShader(psBuffer->GetBufferPointer(), psBuffer->GetBufferSize(), NULL, &mPixelShader));
 
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
+	D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
 	polygonLayout[0].SemanticName = "POSITION";
 	polygonLayout[0].SemanticIndex = 0;
 	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
@@ -100,14 +95,6 @@ bool Shader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHAR* p
 	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[1].InstanceDataStepRate = 0;
-
-	polygonLayout[2].SemanticName = "NORMAL";
-	polygonLayout[2].SemanticIndex = 0;
-	polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[2].InputSlot = 0;
-	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[2].InstanceDataStepRate = 0;
 
 	UINT numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
@@ -127,25 +114,6 @@ bool Shader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHAR* p
 
 	HR(device->CreateBuffer(&matrixBufferDesc, NULL, &mMatrixBuffer));
 
-	D3D11_BUFFER_DESC lightBufferDesc;
-	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	lightBufferDesc.ByteWidth = sizeof(LightBuffer);
-	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	lightBufferDesc.MiscFlags = 0;
-	lightBufferDesc.StructureByteStride = 0;
-
-	HR(device->CreateBuffer(&lightBufferDesc, NULL, &mLightBuffer));
-
-	D3D11_BUFFER_DESC cameraBufferDesc;
-	cameraBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	cameraBufferDesc.ByteWidth = sizeof(CameraBuffer);
-	cameraBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cameraBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cameraBufferDesc.MiscFlags = 0;
-	cameraBufferDesc.StructureByteStride = 0;
-
-	HR(device->CreateBuffer(&cameraBufferDesc, NULL, &mCameraBuffer));
 
 	D3D11_SAMPLER_DESC samplerDesc;
 	// Create a texture sampler state description.
@@ -169,9 +137,7 @@ bool Shader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHAR* p
 }
 
 bool Shader::SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world,XMFLOAT4X4 view, XMFLOAT4X4 proj, 
-	ID3D11ShaderResourceView* texture, 
-	XMFLOAT4 ambientColor, XMFLOAT4 lightColor, XMFLOAT3 lightDir, float specularPower, XMFLOAT4 specularColor,
-	XMFLOAT3 cameraPos)
+	ID3D11ShaderResourceView* texture)
 {
 	XMMATRIX w = XMMatrixTranspose(XMLoadFloat4x4(&world));
 	XMMATRIX v = XMMatrixTranspose(XMLoadFloat4x4(&view));
@@ -185,25 +151,6 @@ bool Shader::SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world,
 	XMStoreFloat4x4(&(mdataPtr->projMatrix), p);
 	context->Unmap(mMatrixBuffer, 0);
 	context->VSSetConstantBuffers(0, 1, &mMatrixBuffer);
-
-	ZeroMemory(&mappedRes, sizeof(D3D11_MAPPED_SUBRESOURCE));	
-	HR(context->Map(mLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedRes));
-	LightBuffer* ldataPtr = (LightBuffer*)mappedRes.pData;
-	ldataPtr->ambientColor = ambientColor;
-	ldataPtr->diffuseColor = lightColor;
-	ldataPtr->diffuseDir = lightDir;
-	ldataPtr->specularPower = specularPower;
-	ldataPtr->specularColor = specularColor;
-	context->Unmap(mLightBuffer, 0);
-	context->PSSetConstantBuffers(0, 1, &mLightBuffer);
-
-	ZeroMemory(&mappedRes, sizeof(D3D11_MAPPED_SUBRESOURCE));
-	HR(context->Map(mCameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedRes));
-	CameraBuffer* cdataPtr = (CameraBuffer*)mappedRes.pData;
-	cdataPtr->cameraPos = cameraPos;
-	cdataPtr->padding = 0.0f;
-	context->Unmap(mCameraBuffer, 0);
-	context->VSSetConstantBuffers(1, 1, &mCameraBuffer);
 
 	context->PSSetShaderResources(0, 1, &texture);
 
@@ -224,8 +171,6 @@ void Shader::RenderShader(ID3D11DeviceContext* context, int indexCount)
 void Shader::ShutdownShader()
 {
 	ReleaseCOM(mMatrixBuffer);
-	ReleaseCOM(mLightBuffer);
-	ReleaseCOM(mCameraBuffer);
 	ReleaseCOM(mLayout);
 	ReleaseCOM(mPixelShader);
 	ReleaseCOM(mVertexShader);

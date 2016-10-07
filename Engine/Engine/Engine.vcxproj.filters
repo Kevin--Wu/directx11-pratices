@@ -103,18 +103,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\color.ps">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="Shaders\color.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="Shaders\texture.ps">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="Shaders\texture.vs">
-      <Filter>Shader Files</Filter>
-    </None>
     <None Include="Shaders\light.ps">
       <Filter>Shader Files</Filter>
     </None>
