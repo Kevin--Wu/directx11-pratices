@@ -146,21 +146,6 @@ float4 PS(VertexOut pin, uniform int gLightCount, uniform bool gUseTexure, unifo
     return litColor;
 }
 
-float4 PS2(VertexOut pin) : SV_Target
-{
-    return gMaterial.Ambient;
-}
-
-technique11 MaterialColor
-{
-    pass P0
-    {
-        SetVertexShader(CompileShader(vs_5_0, VS()));
-        SetGeometryShader(NULL);
-        SetPixelShader(CompileShader(ps_5_0, PS2()));
-    }
-}
-
 technique11 Light1
 {
     pass P0

@@ -22,6 +22,7 @@
 #include "Vertex.h"
 #include "RenderStates.h"
 #include "Waves.h"
+#include "DDSTextureLoader.h"
 
 enum RenderOptions
 {
@@ -51,7 +52,6 @@ private:
 	void BuildLandGeometryBuffers();
 	void BuildWaveGeometryBuffers();
 	void BuildCrateGeometryBuffers();
-	void BuildFullscreenQuadBuffers();
 
 private:
 	ID3D11Buffer* mLandVB;
@@ -63,13 +63,9 @@ private:
 	ID3D11Buffer* mBoxVB;
 	ID3D11Buffer* mBoxIB;
 
-	ID3D11Buffer* mFullscreenQuadVB;
-	ID3D11Buffer* mFullscreenQuadIB;
-
 	ID3D11ShaderResourceView* mGrassMapSRV;
 	ID3D11ShaderResourceView* mWavesMapSRV;
 	ID3D11ShaderResourceView* mBoxMapSRV;
-	ID3D11ShaderResourceView* mDepthStencilMapSRV;
 
 	Waves mWaves;
 
@@ -77,7 +73,6 @@ private:
 	Material mLandMat;
 	Material mWavesMat;
 	Material mBoxMat;
-	Material mFullscreenQuadMat[3];
 
 	XMFLOAT4X4 mGrassTexTransform;
 	XMFLOAT4X4 mWaterTexTransform;
@@ -101,8 +96,6 @@ private:
 	float mRadius;
 
 	POINT mLastMousePos;
-
-	bool mHasSampled;
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
@@ -122,14 +115,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 }
 
 BlendApp::BlendApp(HINSTANCE hInstance)
-: D3DApp(hInstance), mLandVB(nullptr), mLandIB(nullptr), mWavesVB(nullptr), mWavesIB(nullptr), mBoxVB(nullptr), mBoxIB(nullptr), mFullscreenQuadVB(nullptr), mFullscreenQuadIB(nullptr),
-  mGrassMapSRV(nullptr), mWavesMapSRV(nullptr), mBoxMapSRV(nullptr), mDepthStencilMapSRV(nullptr),
-  mWaterTexOffset(0.0f, 0.0f), mEyePosW(0.0f, 0.0f, 0.0f), mLandIndexCount(0), mRenderOptions(RenderOptions::Lighting),
+: D3DApp(hInstance), mLandVB(0), mLandIB(0), mWavesVB(0), mWavesIB(0), mBoxVB(0), mBoxIB(0), mGrassMapSRV(0), mWavesMapSRV(0), mBoxMapSRV(0),
+  mWaterTexOffset(0.0f, 0.0f), mEyePosW(0.0f, 0.0f, 0.0f), mLandIndexCount(0), mRenderOptions(RenderOptions::TexturesAndFog),
   mTheta(1.3f*MathHelper::Pi), mPhi(0.4f*MathHelper::Pi), mRadius(80.0f)
 {
 	mMainWndCaption = L"Blend Demo";
 	mEnable4xMsaa = false;
-	mHasSampled = false;
 
 	mLastMousePos.x = 0;
 	mLastMousePos.y = 0;
@@ -173,18 +164,6 @@ BlendApp::BlendApp(HINSTANCE hInstance)
 	mBoxMat.Ambient  = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	mBoxMat.Diffuse  = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	mBoxMat.Specular = XMFLOAT4(0.4f, 0.4f, 0.4f, 16.0f);
-
-	mFullscreenQuadMat[0].Ambient = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	mFullscreenQuadMat[0].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	mFullscreenQuadMat[0].Specular = XMFLOAT4(0.4f, 0.4f, 0.4f, 16.0f);
-
-	mFullscreenQuadMat[1].Ambient = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	mFullscreenQuadMat[1].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	mFullscreenQuadMat[1].Specular = XMFLOAT4(0.4f, 0.4f, 0.4f, 16.0f);
-
-	mFullscreenQuadMat[2].Ambient = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-	mFullscreenQuadMat[2].Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	mFullscreenQuadMat[2].Specular = XMFLOAT4(0.4f, 0.4f, 0.4f, 16.0f);
 }
 
 BlendApp::~BlendApp()
@@ -196,12 +175,9 @@ BlendApp::~BlendApp()
 	ReleaseCOM(mWavesIB);
 	ReleaseCOM(mBoxVB);
 	ReleaseCOM(mBoxIB);
-	ReleaseCOM(mFullscreenQuadVB);
-	ReleaseCOM(mFullscreenQuadIB);
 	ReleaseCOM(mGrassMapSRV);
 	ReleaseCOM(mWavesMapSRV);
 	ReleaseCOM(mBoxMapSRV);
-	ReleaseCOM(mDepthStencilMapSRV);
 
 	Effects::DestroyAll();
 	InputLayouts::DestroyAll();
@@ -220,20 +196,22 @@ bool BlendApp::Init()
 	InputLayouts::InitAll(md3dDevice);
 	RenderStates::InitAll(md3dDevice);
 
-	ID3D11Resource* texResource = nullptr;
-	HR(DirectX::CreateDDSTextureFromFile(md3dDevice, L"Textures/grass.dds", &texResource, &mGrassMapSRV));
-	ReleaseCOM(texResource);
+	ID3D11Resource* texRes = nullptr;
+	HR(CreateDDSTextureFromFile(md3dDevice, 
+		L"Textures/grass.dds", &texRes, &mGrassMapSRV));
+	ReleaseCOM(texRes);
 
-	HR(DirectX::CreateDDSTextureFromFile(md3dDevice, L"Textures/water2.dds", &texResource, &mWavesMapSRV));
-	ReleaseCOM(texResource);
+	HR(CreateDDSTextureFromFile(md3dDevice,
+		L"Textures/water2.dds", &texRes, &mWavesMapSRV));
+	ReleaseCOM(texRes);
 
-	HR(DirectX::CreateDDSTextureFromFile(md3dDevice, L"Textures/WireFence.dds", &texResource, &mBoxMapSRV));
-	ReleaseCOM(texResource);
+	HR(CreateDDSTextureFromFile(md3dDevice,
+		L"Textures/WireFence.dds", &texRes, &mBoxMapSRV));
+	ReleaseCOM(texRes);
 
 	BuildLandGeometryBuffers();
 	BuildWaveGeometryBuffers();
 	BuildCrateGeometryBuffers();
-	BuildFullscreenQuadBuffers();
 
 	return true;
 }
@@ -355,7 +333,6 @@ void BlendApp::DrawScene()
  
 	ID3DX11EffectTechnique* boxTech = nullptr;
 	ID3DX11EffectTechnique* landAndWavesTech = nullptr;
-	ID3DX11EffectTechnique* fullscreenQuadTech = Effects::BasicFX->MaterialColorTech;
 
 	switch(mRenderOptions)
 	{
@@ -398,8 +375,6 @@ void BlendApp::DrawScene()
 		Effects::BasicFX->SetDiffuseMap(mBoxMapSRV);
 
 		md3dImmediateContext->RSSetState(RenderStates::NoCullRS);
-		md3dImmediateContext->OMSetBlendState(RenderStates::NoRenderTargetWritesBS, blendFactor, 0xffffffff);
-		md3dImmediateContext->OMSetDepthStencilState(RenderStates::MarkDepthDSS, 1);
 		boxTech->GetPassByIndex(p)->Apply(0, md3dImmediateContext);
 		md3dImmediateContext->DrawIndexed(36, 0, 0);
 
@@ -453,104 +428,13 @@ void BlendApp::DrawScene()
 		Effects::BasicFX->SetMaterial(mWavesMat);
 		Effects::BasicFX->SetDiffuseMap(mWavesMapSRV);
 
-		// md3dImmediateContext->OMSetBlendState(RenderStates::TransparentBS, blendFactor, 0xffffffff);
+		md3dImmediateContext->OMSetBlendState(RenderStates::TransparentBS, blendFactor, 0xffffffff);
 		landAndWavesTech->GetPassByIndex(p)->Apply(0, md3dImmediateContext);
 		md3dImmediateContext->DrawIndexed(3*mWaves.TriangleCount(), 0, 0);
+
+		// Restore default blend state
+		md3dImmediateContext->OMSetBlendState(0, blendFactor, 0xffffffff);
     }
-
-	md3dImmediateContext->OMSetBlendState(0, blendFactor, 0xffffffff);
-	md3dImmediateContext->OMSetDepthStencilState(0, 0);
-
-	//
-	// Draw the box with alpha clipping.
-	// 
-	boxTech = Effects::BasicFX->MaterialColorTech;
-	landAndWavesTech = Effects::BasicFX->MaterialColorTech;	
-	for (int k = 2; k < 3; ++k)
-	{
-		boxTech->GetDesc(&techDesc);
-		for (UINT p = 0; p < techDesc.Passes; ++p)
-		{
-			md3dImmediateContext->IASetVertexBuffers(0, 1, &mBoxVB, &stride, &offset);
-			md3dImmediateContext->IASetIndexBuffer(mBoxIB, DXGI_FORMAT_R32_UINT, 0);
-
-			// Set per object constants.
-			XMMATRIX world = XMLoadFloat4x4(&mBoxWorld);
-			XMMATRIX worldInvTranspose = MathHelper::InverseTranspose(world);
-			XMMATRIX worldViewProj = world*view*proj;
-
-			Effects::BasicFX->SetWorld(world);
-			Effects::BasicFX->SetWorldInvTranspose(worldInvTranspose);
-			Effects::BasicFX->SetWorldViewProj(worldViewProj);
-			Effects::BasicFX->SetTexTransform(XMMatrixIdentity());
-			Effects::BasicFX->SetMaterial(mFullscreenQuadMat[k - 1]);
-			Effects::BasicFX->SetDiffuseMap(mBoxMapSRV);
-
-			md3dImmediateContext->RSSetState(RenderStates::NoCullRS);
-			md3dImmediateContext->OMSetDepthStencilState(RenderStates::DrawDepthDSS, k);
-			boxTech->GetPassByIndex(p)->Apply(0, md3dImmediateContext);
-			md3dImmediateContext->DrawIndexed(36, 0, 0);
-
-			// Restore default render state.
-			md3dImmediateContext->RSSetState(0);
-		}
-
-		//
-		// Draw the hills and water with texture and fog (no alpha clipping needed).
-		//
-
-		landAndWavesTech->GetDesc(&techDesc);
-		for (UINT p = 0; p < techDesc.Passes; ++p)
-		{
-			//
-			// Draw the hills.
-			//
-			md3dImmediateContext->IASetVertexBuffers(0, 1, &mLandVB, &stride, &offset);
-			md3dImmediateContext->IASetIndexBuffer(mLandIB, DXGI_FORMAT_R32_UINT, 0);
-
-			// Set per object constants.
-			XMMATRIX world = XMLoadFloat4x4(&mLandWorld);
-			XMMATRIX worldInvTranspose = MathHelper::InverseTranspose(world);
-			XMMATRIX worldViewProj = world*view*proj;
-
-			Effects::BasicFX->SetWorld(world);
-			Effects::BasicFX->SetWorldInvTranspose(worldInvTranspose);
-			Effects::BasicFX->SetWorldViewProj(worldViewProj);
-			Effects::BasicFX->SetTexTransform(XMLoadFloat4x4(&mGrassTexTransform));
-			Effects::BasicFX->SetMaterial(mFullscreenQuadMat[k - 1]);
-			Effects::BasicFX->SetDiffuseMap(mGrassMapSRV);
-
-			md3dImmediateContext->OMSetDepthStencilState(RenderStates::DrawDepthDSS, k);
-			landAndWavesTech->GetPassByIndex(p)->Apply(0, md3dImmediateContext);
-			md3dImmediateContext->DrawIndexed(mLandIndexCount, 0, 0);
-
-			//
-			// Draw the waves.
-			//
-			md3dImmediateContext->IASetVertexBuffers(0, 1, &mWavesVB, &stride, &offset);
-			md3dImmediateContext->IASetIndexBuffer(mWavesIB, DXGI_FORMAT_R32_UINT, 0);
-
-			// Set per object constants.
-			world = XMLoadFloat4x4(&mWavesWorld);
-			worldInvTranspose = MathHelper::InverseTranspose(world);
-			worldViewProj = world*view*proj;
-
-			Effects::BasicFX->SetWorld(world);
-			Effects::BasicFX->SetWorldInvTranspose(worldInvTranspose);
-			Effects::BasicFX->SetWorldViewProj(worldViewProj);
-			Effects::BasicFX->SetTexTransform(XMLoadFloat4x4(&mWaterTexTransform));
-			Effects::BasicFX->SetMaterial(mFullscreenQuadMat[k - 1]);
-			Effects::BasicFX->SetDiffuseMap(mWavesMapSRV);
-
-			md3dImmediateContext->OMSetDepthStencilState(RenderStates::DrawDepthDSS, k);
-			landAndWavesTech->GetPassByIndex(p)->Apply(0, md3dImmediateContext);
-			md3dImmediateContext->DrawIndexed(3 * mWaves.TriangleCount(), 0, 0);
-		}
-	}
-
-	// Restore default states
-	md3dImmediateContext->OMSetBlendState(0, blendFactor, 0xffffffff);
-	md3dImmediateContext->OMSetDepthStencilState(0, 0);
 
 	HR(mSwapChain->Present(0, 0));
 }
@@ -765,50 +649,4 @@ void BlendApp::BuildCrateGeometryBuffers()
     D3D11_SUBRESOURCE_DATA iinitData;
     iinitData.pSysMem = &box.Indices[0];
     HR(md3dDevice->CreateBuffer(&ibd, &iinitData, &mBoxIB));
-}
-
-void BlendApp::BuildFullscreenQuadBuffers()
-{
-	GeometryGenerator::MeshData fullscreenQuad;
-
-	GeometryGenerator geoGen;
-	geoGen.CreateFullscreenQuad(fullscreenQuad);
-
-	//
-	// Extract the vertex elements we are interested in and pack the
-	// vertices of all the meshes into one vertex buffer.
-	//
-
-	std::vector<Vertex::Basic32> vertices(fullscreenQuad.Vertices.size());
-
-	for (UINT i = 0; i < fullscreenQuad.Vertices.size(); ++i)
-	{
-		vertices[i].Pos = fullscreenQuad.Vertices[i].Position;
-		vertices[i].Normal = fullscreenQuad.Vertices[i].Normal;
-		vertices[i].Tex = fullscreenQuad.Vertices[i].TexC;
-	}
-
-	D3D11_BUFFER_DESC vbd;
-	vbd.Usage = D3D11_USAGE_IMMUTABLE;
-	vbd.ByteWidth = sizeof(Vertex::Basic32) * fullscreenQuad.Vertices.size();
-	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vbd.CPUAccessFlags = 0;
-	vbd.MiscFlags = 0;
-	D3D11_SUBRESOURCE_DATA vinitData;
-	vinitData.pSysMem = &vertices[0];
-	HR(md3dDevice->CreateBuffer(&vbd, &vinitData, &mFullscreenQuadVB));
-
-	//
-	// Pack the indices of all the meshes into one index buffer.
-	//
-
-	D3D11_BUFFER_DESC ibd;
-	ibd.Usage = D3D11_USAGE_IMMUTABLE;
-	ibd.ByteWidth = sizeof(UINT) * fullscreenQuad.Indices.size();
-	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	ibd.CPUAccessFlags = 0;
-	ibd.MiscFlags = 0;
-	D3D11_SUBRESOURCE_DATA iinitData;
-	iinitData.pSysMem = &fullscreenQuad.Indices[0];
-	HR(md3dDevice->CreateBuffer(&ibd, &iinitData, &mFullscreenQuadIB));
 }

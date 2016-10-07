@@ -14,5 +14,4 @@ Exercises : Chapter Exercises's answers about the book <Introduction to 3D Game 
 
 Engine : Tutorials in http://www.rastertek.com, updated to VS2015 + DirectXMath(Just another name of XNAMath) + win8.1 SDK.
 
-Textures : some resources(.dds, .bmp, etc..) used to create texture.
 
