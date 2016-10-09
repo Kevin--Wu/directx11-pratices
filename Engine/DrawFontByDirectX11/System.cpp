@@ -21,7 +21,7 @@ bool System::Init()
 
 	InitWindow(screenWidth, screenHeight);
 	mInput = new Input;
-	mInput->Init();
+	Check(mInput->Init(mhInstance, mhWnd, screenWidth, screenHeight));
 
 	mGraphics = new Graphics;
 	Check(mGraphics->Init(mhWnd, screenWidth, screenHeight));
@@ -56,7 +56,14 @@ void System::Run()
 				done = true;
 			}
 		}
+
+		if (mInput->IsEscapePressed())
+		{
+			done = true;
+		}
 	}
+
+
 }
 
 void System::Shutdown()
@@ -69,6 +76,7 @@ void System::Shutdown()
 
 	if (mInput)
 	{
+		mInput->Shutdown();
 		SafeDelete(mInput);
 	}
 
@@ -77,11 +85,11 @@ void System::Shutdown()
 
 bool System::Frame()
 {
-	// Press Esc to exit the app
-	if (mInput->IsKeyDown(VK_ESCAPE))
-		return false;
+	Check(mInput->Frame());
+	int mouseX, mouseY;
+	mInput->GetMouseLocation(mouseX, mouseY);
 
-	mGraphics->Frame();
+	Check(mGraphics->Frame(mouseX, mouseY));
 	Check(mGraphics->Render());
 
 	return true;
@@ -161,23 +169,7 @@ void System::ShutdownWindow()
 
 LRESULT CALLBACK System::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 {
-	switch (umsg)
-	{
-		case WM_KEYDOWN:
-		{
-			mInput->KeyDown(static_cast<unsigned int>(wparam));
-			return 0;
-		}
-
-		case WM_KEYUP:
-		{
-			mInput->KeyUp(static_cast<unsigned int>(wparam));
-			return 0;
-		}
-
-		default:
-			return DefWindowProc(hwnd, umsg, wparam, lparam);
-	}
+	return DefWindowProc(hwnd, umsg, wparam, lparam);
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)

@@ -6,8 +6,7 @@
 #include "Text.h"
 #include "Camera.h"
 
-
-const bool GRAPHICS_FULL_SCREEN = false;
+const bool GRAPHICS_FULL_SCREEN = true;
 const bool GRAPHICS_VSYNC_ENABLE = true;
 const float GRAPHICS_SCREEN_DEPTH = 1000.0f;
 const float GRAPHICS_SCREEN_NEAR = 0.1f;
@@ -20,7 +19,7 @@ public:
 	~Graphics();
 
 	bool Init(HWND hwnd, int width, int height);
-	bool Frame();
+	bool Frame(int mouseX, int mouseY);
 	bool Render();
 	void Shutdown();
 

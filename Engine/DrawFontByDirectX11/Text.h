@@ -28,6 +28,7 @@ public:
 	bool Init(ID3D11Device* device, ID3D11DeviceContext* context, HWND hwnd, int screenWidth, int screenHeight, XMFLOAT4X4 baseViewMatrix);
 	bool Render(ID3D11DeviceContext* context, XMFLOAT4X4 world, XMFLOAT4X4 ortho);
 	void Shutdown();
+	bool SetMousePosition(ID3D11DeviceContext* context, int mouseX, int mouseY);
 
 private:
 	bool InitSentence(ID3D11Device* device, Sentence** sentence, int maxLength);

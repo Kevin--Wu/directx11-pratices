@@ -51,8 +51,10 @@ void Graphics::Shutdown()
 	}
 }
 
-bool Graphics::Frame()
+bool Graphics::Frame(int mouseX, int mouseY)
 {
+	mText->SetMousePosition(mD3D->GetDeviceContext(), mouseX, mouseY);
+
 	mCamera->SetPosition(0.0f, 0.0f, -10.0f);
 
 	return true;
@@ -64,18 +66,15 @@ bool Graphics::Render()
 
 	mCamera->Render();
 	XMFLOAT4X4 view = mCamera->GetViewMatrix();
-
-	XMFLOAT4X4 world = mD3D->GetWorldMatrix();
 	XMFLOAT4X4 ortho = mD3D->GetOrthoMatrix();
+	XMFLOAT4X4 world = mD3D->GetWorldMatrix();
 
 	mD3D->TurnZBufferOff();
-
 	mD3D->TurnAlphaBlendOn();
 
 	mText->Render(mD3D->GetDeviceContext(), world, ortho);
 
 	mD3D->TurnAlphaBlendOff();
-
 	mD3D->TurnZBufferOn();
 
 	mD3D->EndScene();

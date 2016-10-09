@@ -30,9 +30,9 @@ bool Text::Init(ID3D11Device* device, ID3D11DeviceContext* context, HWND hwnd, i
 	Check(mFontShader->Init(hwnd, device));
 
 	Check(InitSentence(device, &mSentence1, 16));
-	Check(UpdateSentence(context, mSentence1, "Hello", 100, 100, 1.0f, 0.0f, 0.0f));
+	//Check(UpdateSentence(context, mSentence1, "I'm a mouse.", 100, 100, 1.0f, 0.0f, 0.0f));
 	Check(InitSentence(device, &mSentence2, 16));
-	Check(UpdateSentence(context, mSentence2, "Goodbye", 100, 200, 1.0f, 1.0f, 0.0f));
+	//Check(UpdateSentence(context, mSentence2, "Goodbye", 100, 200, 0.0f, 0.0f, 0.0f));
 
 	return true;
 }
@@ -173,4 +173,42 @@ void Text::ReleaseSentence(Sentence** sentence)
 		ReleaseCOM((*sentence)->indexBuffer);
 		SafeDelete(*sentence);
 	}
+}
+
+bool Text::SetMousePosition(ID3D11DeviceContext* context, int mouseX, int mouseY)
+{
+	char tempString[16];
+	char mouseString[16];
+	bool result;
+
+
+	// Convert the mouseX integer to string format.
+	_itoa_s(mouseX, tempString, 10);
+
+	// Setup the mouseX string.
+	strcpy_s(mouseString, "Mouse X: ");
+	strcat_s(mouseString, tempString);
+
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(context, mSentence1, mouseString, 20, 20, 1.0f, 1.0f, 1.0f);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Convert the mouseY integer to string format.
+	_itoa_s(mouseY, tempString, 10);
+
+	// Setup the mouseY string.
+	strcpy_s(mouseString, "Mouse Y: ");
+	strcat_s(mouseString, tempString);
+
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(context, mSentence2, mouseString, 20, 40, 1.0f, 1.0f, 1.0f);
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
 }
