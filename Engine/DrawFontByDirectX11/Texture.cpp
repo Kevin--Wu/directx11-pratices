@@ -15,10 +15,8 @@ Texture::~Texture()
 
 bool Texture::Init(ID3D11Device* device, WCHAR* fileName)
 {
-//	ID3D11Resource* texRes = nullptr;
-//	HR(DirectX::CreateDDSTextureFromFile(device, fileName, &texRes, &mMapSRV));
-
-	HR(D3DX11CreateShaderResourceViewFromFile(device, fileName, 0, 0, &mMapSRV, 0));
+	ID3D11Resource* texRes = nullptr;
+	HR(DirectX::CreateDDSTextureFromFile(device, fileName, &texRes, &mMapSRV));
 
 	return true;
 }

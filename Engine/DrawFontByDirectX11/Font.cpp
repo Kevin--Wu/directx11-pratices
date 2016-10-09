@@ -18,6 +18,7 @@ bool Font::Init(ID3D11Device* device, char* fontFileName, WCHAR* textureName)
 {
 	Check(LoadFontData(fontFileName));
 
+	// Load Texture
 	mTexture = new Texture;
 	Check(mTexture->Init(device, textureName));
 
@@ -61,6 +62,7 @@ bool Font::LoadFontData(char* fontFileName)
 		fin.get(input);
 		while (input != ' ')
 			fin.get(input);
+
 		fin >> mFont[i].left;
 		fin >> mFont[i].right;
 		fin >> mFont[i].size;

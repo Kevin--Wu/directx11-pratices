@@ -19,18 +19,18 @@ Text::~Text()
 
 bool Text::Init(ID3D11Device* device, ID3D11DeviceContext* context, HWND hwnd, int screenWidth, int screenHeight, XMFLOAT4X4 baseViewMatrix)
 {
-	mScreenWidth = mScreenWidth;
-	mScreenHeight = mScreenHeight;
+	mScreenWidth = screenWidth;
+	mScreenHeight = screenHeight;
 	mBaseViewMatrix = baseViewMatrix;
 
 	mFont = new Font;
-	Check(mFont->Init(device, "Data/fontdata.txt", L"Data/font_old.dds"));
+	Check(mFont->Init(device, "Data/fontdata.txt", L"Data/font.dds"));
 
 	mFontShader = new FontShader;
-	mFontShader->Init(hwnd, device);
+	Check(mFontShader->Init(hwnd, device));
 
 	Check(InitSentence(device, &mSentence1, 16));
-	Check(UpdateSentence(context, mSentence1, "Hello", 0, 0, 1.0f, 0.0f, 0.0f));
+	Check(UpdateSentence(context, mSentence1, "Hello", 100, 100, 1.0f, 0.0f, 0.0f));
 	Check(InitSentence(device, &mSentence2, 16));
 	Check(UpdateSentence(context, mSentence2, "Goodbye", 100, 200, 1.0f, 1.0f, 0.0f));
 
@@ -97,7 +97,7 @@ bool Text::InitSentence(ID3D11Device* device, Sentence** sentence, int maxLength
 	D3D11_BUFFER_DESC ibDesc;
 	ibDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	ibDesc.Usage = D3D11_USAGE_DEFAULT;
-	ibDesc.ByteWidth = sizeof(unsigned long) * sizeof((*sentence)->indexCount);
+	ibDesc.ByteWidth = sizeof(unsigned long) * (*sentence)->indexCount;
 	ibDesc.CPUAccessFlags = 0;
 	ibDesc.MiscFlags = 0;
 	ibDesc.StructureByteStride = 0;
@@ -131,8 +131,8 @@ bool Text::UpdateSentence(ID3D11DeviceContext* context, Sentence* sentence, char
 	Vertex* vertices = new Vertex[sentence->vertexCount];
 	memset(vertices, 0, sizeof(Vertex) * sentence->vertexCount);
 
-	float drawX = static_cast<float>(posX - (mScreenWidth/2));
-	float drawY = static_cast<float>((mScreenHeight/2) - posY);
+	float drawX = static_cast<float>(posX - (mScreenWidth>>1));
+	float drawY = static_cast<float>((mScreenHeight>>1) - posY);
 
 	mFont->BuildVertexArray((void*)vertices, text, drawX, drawY);
 

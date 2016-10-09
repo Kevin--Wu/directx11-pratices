@@ -2,12 +2,8 @@
 #define _TEXTURE_H_
 
 #include <d3d11.h>
-#include "Third/D3DX11async.h"
-
 #include "Utils.h"
 #include "Third/DDSTextureLoader.h"  // a light-weight dds loader, but it seems not support font.dds
-
-#pragma comment(lib, "d3dx11.lib")
 
 class Texture
 {

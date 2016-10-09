@@ -23,9 +23,10 @@ bool Graphics::Init(HWND hwnd, int width, int height)
 	mCamera = new Camera;
 	mCamera->SetPosition(0.0f, 0.0f, -1.0f);
 	mCamera->Render();
+	XMFLOAT4X4 baseViewMatrix = mCamera->GetViewMatrix();
 
 	mText = new Text;
-	Check(mText->Init(mD3D->GetDevice(), mD3D->GetDeviceContext(), hwnd, width, height, mCamera->GetViewMatrix()));
+	Check(mText->Init(mD3D->GetDevice(), mD3D->GetDeviceContext(), hwnd, width, height, baseViewMatrix));
 
 	return true;
 }
@@ -52,8 +53,6 @@ void Graphics::Shutdown()
 
 bool Graphics::Frame()
 {
-	//Check(Render());
-
 	mCamera->SetPosition(0.0f, 0.0f, -10.0f);
 
 	return true;
@@ -64,8 +63,9 @@ bool Graphics::Render()
 	mD3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
 	mCamera->Render();
-	XMFLOAT4X4 world = mD3D->GetWorldMatrix();
 	XMFLOAT4X4 view = mCamera->GetViewMatrix();
+
+	XMFLOAT4X4 world = mD3D->GetWorldMatrix();
 	XMFLOAT4X4 ortho = mD3D->GetOrthoMatrix();
 
 	mD3D->TurnZBufferOff();

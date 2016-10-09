@@ -95,18 +95,6 @@
     <ClInclude Include="FontShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Third\D3DX11.h">
-      <Filter>Third</Filter>
-    </ClInclude>
-    <ClInclude Include="Third\D3DX11async.h">
-      <Filter>Third</Filter>
-    </ClInclude>
-    <ClInclude Include="Third\D3DX11core.h">
-      <Filter>Third</Filter>
-    </ClInclude>
-    <ClInclude Include="Third\D3DX11tex.h">
-      <Filter>Third</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\font.vs">
