@@ -18,7 +18,9 @@ Sound::~Sound()
 bool Sound::Init(HWND hwnd)
 {
 	Check(InitDirectSound(hwnd));
-	Check(LoadWavFile("Musics/sound01.wav", &mSecondaryBuffer1));
+	// Note that your download folder doesn't include this wav file because it's too big.
+	// You could try sound01.wav to test.
+	Check(LoadWavFile("Musics/DeepSeaGirl.wav", &mSecondaryBuffer1));
 	Check(PlayWavFile());
 
 	return true;
@@ -214,7 +216,7 @@ bool Sound::PlayWavFile()
 	// Set volume of the buffer to 100%.
 	HR(mSecondaryBuffer1->SetVolume(DSBVOLUME_MAX));
 
-	HR(mSecondaryBuffer1->Play(0, 0, 0));
+	HR(mSecondaryBuffer1->Play(0, 0, DSBPLAY_LOOPING));
 
 	return true;
 }

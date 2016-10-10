@@ -17,22 +17,22 @@ Text::~Text()
 {
 }
 
-bool Text::Init(ID3D11Device* device, ID3D11DeviceContext* context, HWND hwnd, int screenWidth, int screenHeight, XMFLOAT4X4 baseViewMatrix)
+bool Text::Init(ID3D11Device* device, ID3D11DeviceContext* context, HWND hwnd, int screenWidth, int screenHeight, char* fontDataFile, WCHAR* fontDDSFile, int textMaxLength, XMFLOAT4X4 baseViewMatrix)
 {
 	mScreenWidth = screenWidth;
 	mScreenHeight = screenHeight;
 	mBaseViewMatrix = baseViewMatrix;
 
 	mFont = new Font;
-	Check(mFont->Init(device, "Data/fontdata.txt", L"Data/font.dds"));
+	Check(mFont->Init(device, fontDataFile, fontDDSFile));
 
 	mFontShader = new FontShader;
 	Check(mFontShader->Init(hwnd, device));
 
-	Check(InitSentence(device, &mSentence1, 16));
-	//Check(UpdateSentence(context, mSentence1, "I'm a mouse.", 100, 100, 1.0f, 0.0f, 0.0f));
-	Check(InitSentence(device, &mSentence2, 16));
-	//Check(UpdateSentence(context, mSentence2, "Goodbye", 100, 200, 0.0f, 0.0f, 0.0f));
+	Check(InitSentence(device, &mSentence1, textMaxLength));
+	Check(UpdateSentence(context, mSentence1, "FPS:", 20, 20, 1.0f, 0.0f, 0.0f));
+	Check(InitSentence(device, &mSentence2, textMaxLength));
+	Check(UpdateSentence(context, mSentence2, "GPU:", 20, 40, 1.0f, 1.0f, 0.0f));
 
 	return true;
 }

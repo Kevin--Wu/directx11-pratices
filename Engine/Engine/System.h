@@ -6,6 +6,7 @@
 #include <windows.h>
 #include "Input.h"
 #include "Sound.h"
+#include "Timer.h"
 #include "Graphics.h"
 
 class System
@@ -31,6 +32,7 @@ private:
 	WCHAR* mAppName;
 	HINSTANCE mhInstance;
 
+	Timer* mTimer;
 	Input* mInput;
 	Sound* mSound;
 	Graphics* mGraphics;

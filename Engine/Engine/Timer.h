@@ -11,15 +11,16 @@ public:
 	Timer(const Timer& other);
 	~Timer();
 
-	void Init();
-	void Tick();
+	bool Init();
+	void Frame();
 
-	float GetDeltaTime() const;
+	float GetTime() const;
 
 private:
-	unsigned long mPrevTime;
-	unsigned long mCurrTime;
-	unsigned long mDeltaTime;
+	INT64 mFrequency;
+	INT64 mStartTime;
+	float mFrameTime;
+	float mTicksPerMs;
 };
 
 #endif

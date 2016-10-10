@@ -10,9 +10,15 @@ D3D::D3D()
 	mDeviceContext = nullptr;
 	mRenderTargetView = nullptr;
 	mDepthStencilBuffer = nullptr;
-	mDepthStencilState = nullptr;
 	mDepthStencilView = nullptr;
+
 	mRasterState = nullptr;
+
+	mAlphaEnableBlendingState = nullptr;
+	mAlphaDisableBlendingState = nullptr;
+
+	mNoDepthState = nullptr;
+	mDepthStencilState = nullptr;
 }
 
 D3D::D3D(const D3D& other)
@@ -151,6 +157,43 @@ bool D3D::Init(HWND hwnd, int screenWidth, int screenHeight, bool vsync, bool fu
 
 	HR(mDevice->CreateTexture2D(&depthBufferDesc, NULL, &mDepthStencilBuffer));
 
+	// Create Raster State
+	D3D11_RASTERIZER_DESC rasterDesc;
+	rasterDesc.AntialiasedLineEnable = false;
+	rasterDesc.CullMode = D3D11_CULL_NONE;
+	rasterDesc.DepthBias = 0;
+	rasterDesc.DepthBiasClamp = 0.0f;
+	rasterDesc.DepthClipEnable = true;
+	rasterDesc.FillMode = D3D11_FILL_SOLID;
+	rasterDesc.FrontCounterClockwise = false;
+	rasterDesc.MultisampleEnable = false;
+	rasterDesc.ScissorEnable = false;
+	rasterDesc.SlopeScaledDepthBias = 0.0f;
+
+	HR(mDevice->CreateRasterizerState(&rasterDesc, &mRasterState));
+	mDeviceContext->RSSetState(mRasterState);
+
+	// Create Blend State
+	D3D11_BLEND_DESC bsDesc;
+	ZeroMemory(&bsDesc, sizeof(D3D11_BLEND_DESC));
+	bsDesc.AlphaToCoverageEnable = false;
+	bsDesc.IndependentBlendEnable = false;
+	bsDesc.RenderTarget[0].BlendEnable = true;
+	bsDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	bsDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	bsDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	bsDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	bsDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	bsDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	bsDesc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+
+	HR(mDevice->CreateBlendState(&bsDesc, &mAlphaEnableBlendingState));
+	bsDesc.RenderTarget[0].BlendEnable = false;
+	HR(mDevice->CreateBlendState(&bsDesc, &mAlphaDisableBlendingState));
+	float blendFactors[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	mDeviceContext->OMSetBlendState(mAlphaDisableBlendingState, blendFactors, 0xffffffff);
+
+	// Create DepthStencil State
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
 	ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
 
@@ -174,8 +217,11 @@ bool D3D::Init(HWND hwnd, int screenWidth, int screenHeight, bool vsync, bool fu
 
 	HR(mDevice->CreateDepthStencilState(&depthStencilDesc, &mDepthStencilState));
 
+	depthStencilDesc.DepthEnable = false;
+	HR(mDevice->CreateDepthStencilState(&depthStencilDesc, &mNoDepthState));
 	mDeviceContext->OMSetDepthStencilState(mDepthStencilState, 1);
 
+	// CreateDepthStencilView
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
 
@@ -184,25 +230,9 @@ bool D3D::Init(HWND hwnd, int screenWidth, int screenHeight, bool vsync, bool fu
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
 	HR(mDevice->CreateDepthStencilView(mDepthStencilBuffer, &depthStencilViewDesc, &mDepthStencilView));
-
 	mDeviceContext->OMSetRenderTargets(1, &mRenderTargetView, mDepthStencilView);
 
-	D3D11_RASTERIZER_DESC rasterDesc;
-	rasterDesc.AntialiasedLineEnable = false;
-	rasterDesc.CullMode = D3D11_CULL_NONE;
-	rasterDesc.DepthBias = 0;
-	rasterDesc.DepthBiasClamp = 0.0f;
-	rasterDesc.DepthClipEnable = true;
-	rasterDesc.FillMode = D3D11_FILL_SOLID;
-	rasterDesc.FrontCounterClockwise = false;
-	rasterDesc.MultisampleEnable = false;
-	rasterDesc.ScissorEnable = false;
-	rasterDesc.SlopeScaledDepthBias = 0.0f;
-
-	HR(mDevice->CreateRasterizerState(&rasterDesc, &mRasterState));
-
-	mDeviceContext->RSSetState(mRasterState);
-
+	// Create viewport
 	D3D11_VIEWPORT viewport;
 	viewport.Width = static_cast<float>(screenWidth);
 	viewport.Height = static_cast<float>(screenHeight);
@@ -210,20 +240,17 @@ bool D3D::Init(HWND hwnd, int screenWidth, int screenHeight, bool vsync, bool fu
 	viewport.MaxDepth = 1.0f;
 	viewport.TopLeftX = 0.0f;
 	viewport.TopLeftY = 0.0f;
-
 	mDeviceContext->RSSetViewports(1, &viewport);
+
+	// Init world, proj, ortho matrix
+	XMStoreFloat4x4(&mWorld, XMMatrixIdentity());
 
 	float fieldOfView, screenAspect;
 	fieldOfView = XM_PI / 4.0f;
 	screenAspect = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
-
-	XMMATRIX m;
-	m = XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, screenNear, screenDepth);
+	XMMATRIX m = XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, screenNear, screenDepth);
 	XMStoreFloat4x4(&mProj, m);
 
-	XMStoreFloat4x4(&mWorld, XMMatrixIdentity());
-
-	// Create an orthographic projection matrix for 2D rendering.
 	m = XMMatrixOrthographicLH(static_cast<float>(screenWidth), static_cast<float>(screenHeight), screenNear, screenDepth);
 	XMStoreFloat4x4(&mOrtho, m);
 
@@ -237,8 +264,11 @@ void D3D::Shutdown()
 		mSwapChain->SetFullscreenState(false, NULL);
 
 	ReleaseCOM(mRasterState);
-	ReleaseCOM(mDepthStencilView);
+	ReleaseCOM(mAlphaEnableBlendingState);
+	ReleaseCOM(mAlphaDisableBlendingState);
 	ReleaseCOM(mDepthStencilState);
+
+	ReleaseCOM(mDepthStencilView);
 	ReleaseCOM(mDepthStencilBuffer);
 	ReleaseCOM(mRenderTargetView);
 	ReleaseCOM(mDeviceContext);
@@ -316,4 +346,26 @@ void D3D::GetVideoCardInfo(char* cardName, int& memory) const
 {
 	strcpy_s(cardName, 128, mVideoCardDescription);
 	memory = mVideoCardMemory;
+}
+
+void D3D::TurnBlendOn() const
+{
+	float blendFactors[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	mDeviceContext->OMSetBlendState(mAlphaEnableBlendingState, blendFactors, 0xffffffff);
+}
+
+void D3D::TurnBlendOff() const
+{
+	float blendFactors[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	mDeviceContext->OMSetBlendState(mAlphaDisableBlendingState, blendFactors, 0xffffffff);
+}
+
+void D3D::TurnDepthOn() const
+{
+	mDeviceContext->OMSetDepthStencilState(mDepthStencilState, 1);
+}
+
+void D3D::TurnDepthOff() const
+{
+	mDeviceContext->OMSetDepthStencilState(mNoDepthState, 1);
 }

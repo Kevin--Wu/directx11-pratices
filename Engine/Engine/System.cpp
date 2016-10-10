@@ -2,6 +2,7 @@
 
 System::System()
 {
+	mTimer = nullptr;
 	mInput = nullptr;
 	mSound = nullptr;
 	mGraphics = nullptr;
@@ -21,6 +22,9 @@ bool System::Init()
 	int screenHeight = 0;
 
 	InitWindow(screenWidth, screenHeight);
+
+	mTimer = new Timer;
+	Check(mTimer->Init());
 
 	mInput = new Input;
 	Check(mInput->Init(mhInstance, mhWnd, screenWidth, screenHeight));
@@ -73,6 +77,11 @@ void System::Run()
 
 void System::Shutdown()
 {
+	if (mTimer)
+	{
+		SafeDelete(mTimer);
+	}
+
 	if (mInput)
 	{
 		mInput->Shutdown();
@@ -96,11 +105,11 @@ void System::Shutdown()
 
 bool System::Frame()
 {
-	Check(mInput->Frame());
-	int mouseX, mouseY;
-	mInput->GetMouseLocation(mouseX, mouseY);
+	mTimer->Frame();
 
-	Check(mGraphics->Frame());
+	Check(mInput->Frame());
+
+	Check(mGraphics->Frame(mTimer->GetTime()));
 	Check(mGraphics->Render());
 
 	return true;

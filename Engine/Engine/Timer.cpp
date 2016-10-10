@@ -12,21 +12,34 @@ Timer::~Timer()
 {
 }
 
-void Timer::Init()
+bool Timer::Init()
 {
-	mPrevTime = 0;
-	mCurrTime = 0;
-	mDeltaTime = 0;
+	QueryPerformanceFrequency((LARGE_INTEGER*)&mFrequency);
+	if (mFrequency == 0)
+		return false;
+
+	mTicksPerMs = static_cast<float>(mFrequency) * 0.001f;
+
+	QueryPerformanceCounter((LARGE_INTEGER*)&mStartTime);
+
+	return true;
 }
 
-float Timer::GetDeltaTime() const
+
+void Timer::Frame()
 {
-	return static_cast<float>(mDeltaTime) / 1000.0f;
+	INT64 currTime;
+	float timeDifference;
+
+	QueryPerformanceCounter((LARGE_INTEGER*)&currTime);
+	timeDifference = static_cast<float>(currTime - mStartTime);
+
+	mFrameTime = timeDifference / mTicksPerMs;
+
+	mStartTime = currTime;
 }
 
-void Timer::Tick()
+float Timer::GetTime() const
 {
-	mCurrTime = timeGetTime();
-	mDeltaTime = mCurrTime - mPrevTime;
-	mPrevTime = timeGetTime();
+	return mFrameTime;
 }

@@ -3,6 +3,7 @@
 
 #include <windows.h>
 #include "D3D.h"
+#include "Text.h"
 #include "Timer.h"
 #include "Model.h"
 #include "Light.h"
@@ -22,15 +23,16 @@ public:
 	~Graphics();
 
 	bool Init(HWND hwnd, int width, int height);
-	bool Frame();
+	bool Frame(float dt);
 	bool Render();
 	void Shutdown();
 
 private:
-	D3D* mD3D;
-	Model* mModel;
-	Timer* mTimer;
-	Light* mLight;
+	D3D*    mD3D;
+	Text*   mText;
+	Model*  mModel;
+	Timer*  mTimer;
+	Light*  mLight;
 	Camera* mCamera;
 	Shader* mShader;
 };

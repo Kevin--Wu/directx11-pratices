@@ -37,6 +37,12 @@ public:
 	XMMATRIX GetOrthoMatrixXM() const;
 	void GetVideoCardInfo(char*, int&) const;
 
+	void TurnDepthOn() const;
+	void TurnDepthOff() const;
+
+	void TurnBlendOn() const;
+	void TurnBlendOff() const;
+
 private:
 	bool mVsyncEnabled;
 	int mVideoCardMemory;
@@ -47,9 +53,15 @@ private:
 	ID3D11DeviceContext* mDeviceContext;
 	ID3D11RenderTargetView* mRenderTargetView;
 	ID3D11Texture2D* mDepthStencilBuffer;
-	ID3D11DepthStencilState* mDepthStencilState;
 	ID3D11DepthStencilView* mDepthStencilView;
+
 	ID3D11RasterizerState* mRasterState;
+
+	ID3D11BlendState* mAlphaEnableBlendingState;
+	ID3D11BlendState* mAlphaDisableBlendingState;
+
+	ID3D11DepthStencilState* mNoDepthState;
+	ID3D11DepthStencilState* mDepthStencilState;
 
 	XMFLOAT4X4 mProj;
 	XMFLOAT4X4 mWorld;
