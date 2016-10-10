@@ -34,12 +34,11 @@ bool Graphics::Init(HWND hwnd, int width, int height)
 	mLight->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	mModel = new Model;
-	Check(mModel->Init(mD3D->GetDevice(), "Model/mayaCube.txt", L"Textures/flare.dds"));
+	Check(mModel->Init(mD3D->GetDevice(), "Models/mayaCube.txt", L"Textures/flare.dds"));
 
 	mCamera->Render();
 	mText = new Text;
-	int maxLength = 16;
-	mText->Init(mD3D->GetDevice(), mD3D->GetDeviceContext(), hwnd, width, height, "Data/fontdata.txt", L"Data/font.dds", maxLength, mCamera->GetViewMatrix());
+	mText->Init(mD3D->GetDevice(), mD3D->GetDeviceContext(), hwnd, width, height, "Fonts/fontdata.txt", L"Fonts/font.dds", 16, mCamera->GetViewMatrix());
 
 	mShader = new Shader;
 	Check(mShader->Init(hwnd, mD3D->GetDevice()));
@@ -87,13 +86,14 @@ void Graphics::Shutdown()
 bool Graphics::Frame(float dt)
 {
 	static float angle = 0.0f;
-	angle += 0.01f;
+	angle += dt;
 	if (angle >= 6.28f)
 		angle = 0.0f;
 
 	XMMATRIX rotate = XMMatrixRotationX(angle) * XMMatrixRotationY(angle) * XMMatrixRotationZ(angle);
-
 	mD3D->SetWorldMatrix(rotate);
+
+	mFrameTime = static_cast<int>(1 / dt);
 
 	return true;
 }
@@ -119,14 +119,29 @@ bool Graphics::Render()
 		mLight->GetAmbientColor(), mLight->GetDiffuseColor(), mLight->GetDiffuseDir(),
 		mLight->GetSpecularPower(), mLight->GetSpecularColor(), mCamera->GetPosition()));
 
-	
 	mD3D->TurnDepthOff();
 	mD3D->TurnBlendOn();
 
 	XMFLOAT4X4 I;
 	XMStoreFloat4x4(&I, XMMatrixIdentity());
 
-	Check(mText->Render(mD3D->GetDeviceContext(), I, mD3D->GetOrthoMatrix()));
+	char fpsStr[16] = "FPS:";
+	char cpuStr[16] = "CPU:";
+	char tempStr[8];
+
+	int cpuRate = 1;
+
+	// In _itoa_s, parameter '10' means we use Decimal System
+	_itoa_s(mFrameTime, tempStr, 10);
+	strcat_s(fpsStr, tempStr);
+
+	_itoa_s(cpuRate, tempStr, 10);
+	strcat_s(cpuStr, tempStr);
+	strcpy_s(tempStr, "%");
+	strcat_s(cpuStr, tempStr);
+	
+	Check(mText->Render(mD3D->GetDeviceContext(), fpsStr, 20, 20, XMFLOAT3(1.0f, 0.0f, 0.0f), I, mD3D->GetOrthoMatrix()));
+	Check(mText->Render(mD3D->GetDeviceContext(), cpuStr, 20, 40, XMFLOAT3(1.0f, 0.0f, 0.0f), I, mD3D->GetOrthoMatrix()));
 
 	mD3D->TurnBlendOff();
 	mD3D->TurnDepthOn();

@@ -39,7 +39,7 @@ void Timer::Frame()
 	mStartTime = currTime;
 }
 
-float Timer::GetTime() const
+float Timer::GetFrameTime() const
 {
-	return mFrameTime;
+	return mFrameTime * 0.001f;
 }

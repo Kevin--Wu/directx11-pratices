@@ -17,7 +17,7 @@
       <UniqueIdentifier>{e35a32f3-96bf-425f-a8aa-fa4c9afeef54}</UniqueIdentifier>
     </Filter>
     <Filter Include="Third">
-      <UniqueIdentifier>{6f4b89ab-1d9f-4c58-b623-5eecdd4ffdb5}</UniqueIdentifier>
+      <UniqueIdentifier>{b9b00354-5a1e-4206-99e1-e400238afed6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -51,14 +51,8 @@
     <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Third\DDSTextureLoader.h">
-      <Filter>Third</Filter>
-    </ClInclude>
     <ClInclude Include="Light.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Third\dxerr.h">
-      <Filter>Third</Filter>
     </ClInclude>
     <ClInclude Include="Sound.h">
       <Filter>Header Files</Filter>
@@ -71,6 +65,12 @@
     </ClInclude>
     <ClInclude Include="Text.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\dxerr.h">
+      <Filter>Third</Filter>
+    </ClInclude>
+    <ClInclude Include="Third\DDSTextureLoader.h">
+      <Filter>Third</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -104,14 +104,8 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Third\DDSTextureLoader.cpp">
-      <Filter>Third</Filter>
-    </ClCompile>
     <ClCompile Include="Light.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Third\dxerr.cpp">
-      <Filter>Third</Filter>
     </ClCompile>
     <ClCompile Include="Sound.cpp">
       <Filter>Source Files</Filter>
@@ -124,6 +118,12 @@
     </ClCompile>
     <ClCompile Include="Text.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Third\dxerr.cpp">
+      <Filter>Third</Filter>
+    </ClCompile>
+    <ClCompile Include="Third\DDSTextureLoader.cpp">
+      <Filter>Third</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

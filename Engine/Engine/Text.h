@@ -26,23 +26,23 @@ public:
 	~Text();
 
 	bool Init(ID3D11Device* device, ID3D11DeviceContext* context, HWND hwnd, int screenWidth, int screenHeight, char* fontDataFile, WCHAR* fontDDSFile, int textMaxLength, XMFLOAT4X4 baseViewMatrix);
-	bool Render(ID3D11DeviceContext* context, XMFLOAT4X4 world, XMFLOAT4X4 ortho);
+	bool Render(ID3D11DeviceContext* context, char* text, int posX, int posY, XMFLOAT3 color, XMFLOAT4X4 world, XMFLOAT4X4 ortho);
 	void Shutdown();
-	bool SetMousePosition(ID3D11DeviceContext* context, int mouseX, int mouseY);
 
 private:
-	bool InitSentence(ID3D11Device* device, Sentence** sentence, int maxLength);
-	bool UpdateSentence(ID3D11DeviceContext* context, Sentence* sentence, char* text, int posX, int posY, float red, float green, float blue);
-	void ReleaseSentence(Sentence** sentence);
-	bool RenderSentence(ID3D11DeviceContext* context, Sentence* sentence, XMFLOAT4X4 world, XMFLOAT4X4 ortho);
+	bool InitSentence(ID3D11Device* device, int maxLength);
+	bool UpdateSentence(ID3D11DeviceContext* context, char* text, int posX, int posY, XMFLOAT3 color);
+	void ReleaseSentence();
+	bool RenderSentence(ID3D11DeviceContext* context, XMFLOAT4X4 world, XMFLOAT4X4 ortho);
 
 private:
+	Sentence* mSentence;
 
 	Font* mFont;
 	FontShader* mFontShader;
+
 	int mScreenWidth, mScreenHeight;
 	XMFLOAT4X4 mBaseViewMatrix;
-	Sentence *mSentence1, *mSentence2;
 };
 
 #endif

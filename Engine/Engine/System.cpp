@@ -109,7 +109,7 @@ bool System::Frame()
 
 	Check(mInput->Frame());
 
-	Check(mGraphics->Frame(mTimer->GetTime()));
+	Check(mGraphics->Frame(mTimer->GetFrameTime()));
 	Check(mGraphics->Render());
 
 	return true;

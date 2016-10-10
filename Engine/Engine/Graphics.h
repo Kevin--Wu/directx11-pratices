@@ -29,11 +29,14 @@ public:
 
 private:
 	D3D*    mD3D;
-	Text*   mText;
-	Model*  mModel;
 	Timer*  mTimer;
 	Light*  mLight;
 	Camera* mCamera;
 	Shader* mShader;
+
+	Text*   mText;
+	Model*  mModel;
+
+	int mFrameTime;
 };
 #endif
