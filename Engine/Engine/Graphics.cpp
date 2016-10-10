@@ -34,7 +34,7 @@ bool Graphics::Init(HWND hwnd, int width, int height)
 	mLight->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	mModel = new Model;
-	Check(mModel->Init(mD3D->GetDevice(), "Models/mayaCube.txt", L"Textures/flare.dds"));
+	Check(mModel->Init(mD3D->GetDevice(), "Models/Cube.txt", L"Textures/flare.dds"));
 
 	mCamera->Render();
 	mText = new Text;
