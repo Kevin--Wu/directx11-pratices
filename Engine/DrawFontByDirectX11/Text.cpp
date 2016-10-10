@@ -179,8 +179,6 @@ bool Text::SetMousePosition(ID3D11DeviceContext* context, int mouseX, int mouseY
 {
 	char tempString[16];
 	char mouseString[16];
-	bool result;
-
 
 	// Convert the mouseX integer to string format.
 	_itoa_s(mouseX, tempString, 10);
@@ -189,26 +187,13 @@ bool Text::SetMousePosition(ID3D11DeviceContext* context, int mouseX, int mouseY
 	strcpy_s(mouseString, "Mouse X: ");
 	strcat_s(mouseString, tempString);
 
-	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(context, mSentence1, mouseString, 20, 20, 1.0f, 1.0f, 1.0f);
-	if (!result)
-	{
-		return false;
-	}
+	Check(UpdateSentence(context, mSentence1, mouseString, 20, 20, 1.0f, 1.0f, 1.0f));
 
-	// Convert the mouseY integer to string format.
 	_itoa_s(mouseY, tempString, 10);
-
-	// Setup the mouseY string.
 	strcpy_s(mouseString, "Mouse Y: ");
 	strcat_s(mouseString, tempString);
 
-	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(context, mSentence2, mouseString, 20, 40, 1.0f, 1.0f, 1.0f);
-	if (!result)
-	{
-		return false;
-	}
+	Check(result = UpdateSentence(context, mSentence2, mouseString, 20, 40, 1.0f, 1.0f, 1.0f));
 
 	return true;
 }

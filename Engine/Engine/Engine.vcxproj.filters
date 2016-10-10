@@ -60,6 +60,9 @@
     <ClInclude Include="Third\dxerr.h">
       <Filter>Third</Filter>
     </ClInclude>
+    <ClInclude Include="Sound.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -100,6 +103,9 @@
     </ClCompile>
     <ClCompile Include="Third\dxerr.cpp">
       <Filter>Third</Filter>
+    </ClCompile>
+    <ClCompile Include="Sound.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

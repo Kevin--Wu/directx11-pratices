@@ -84,8 +84,6 @@ bool Graphics::Frame()
 {
 	mTimer->Tick();
 
-	Check(Render());
-
 	return true;
 }
 

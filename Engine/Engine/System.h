@@ -5,6 +5,7 @@
 
 #include <windows.h>
 #include "Input.h"
+#include "Sound.h"
 #include "Graphics.h"
 
 class System
@@ -31,6 +32,7 @@ private:
 	HINSTANCE mhInstance;
 
 	Input* mInput;
+	Sound* mSound;
 	Graphics* mGraphics;
 };
 

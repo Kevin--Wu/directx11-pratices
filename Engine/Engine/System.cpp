@@ -3,6 +3,7 @@
 System::System()
 {
 	mInput = nullptr;
+	mSound = nullptr;
 	mGraphics = nullptr;
 }
 
@@ -20,11 +21,15 @@ bool System::Init()
 	int screenHeight = 0;
 
 	InitWindow(screenWidth, screenHeight);
+
 	mInput = new Input;
-	mInput->Init();
+	Check(mInput->Init(mhInstance, mhWnd, screenWidth, screenHeight));
 
 	mGraphics = new Graphics;
 	Check(mGraphics->Init(mhWnd, screenWidth, screenHeight));
+
+	mSound = new Sound;
+	Check(mSound->Init(mhWnd));
 
 	return true;
 }
@@ -56,20 +61,34 @@ void System::Run()
 				done = true;
 			}
 		}
+
+		if (mInput->IsEscapePressed())
+		{
+			done = true;
+		}
 	}
+
+
 }
 
 void System::Shutdown()
 {
+	if (mInput)
+	{
+		mInput->Shutdown();
+		SafeDelete(mInput);
+	}
+
+	if (mSound)
+	{
+		mSound->Shutdown();
+		SafeDelete(mSound);
+	}
+
 	if (mGraphics)
 	{
 		mGraphics->Shutdown();
 		SafeDelete(mGraphics);
-	}
-
-	if (mInput)
-	{
-		SafeDelete(mInput);
 	}
 
 	ShutdownWindow();
@@ -77,11 +96,12 @@ void System::Shutdown()
 
 bool System::Frame()
 {
-	// Press Esc to exit the app
-	if (mInput->IsKeyDown(VK_ESCAPE))
-		return false;
+	Check(mInput->Frame());
+	int mouseX, mouseY;
+	mInput->GetMouseLocation(mouseX, mouseY);
 
 	Check(mGraphics->Frame());
+	Check(mGraphics->Render());
 
 	return true;
 }
@@ -160,42 +180,26 @@ void System::ShutdownWindow()
 
 LRESULT CALLBACK System::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 {
-	switch (umsg)
-	{
-		case WM_KEYDOWN:
-		{
-			mInput->KeyDown(static_cast<unsigned int>(wparam));
-			return 0;
-		}
-
-		case WM_KEYUP:
-		{
-			mInput->KeyUp(static_cast<unsigned int>(wparam));
-			return 0;
-		}
-
-		default:
-			return DefWindowProc(hwnd, umsg, wparam, lparam);
-	}
+	return DefWindowProc(hwnd, umsg, wparam, lparam);
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 {
 	switch (umsg)
 	{
-		case WM_DESTROY:
-		{
-			PostQuitMessage(0);
-			return 0;
-		}
+	case WM_DESTROY:
+	{
+		PostQuitMessage(0);
+		return 0;
+	}
 
-		case WM_CLOSE:
-		{
-			PostQuitMessage(0);
-			return 0;
-		}
+	case WM_CLOSE:
+	{
+		PostQuitMessage(0);
+		return 0;
+	}
 
-		default:
-			return gApp->MessageHandler(hwnd, umsg, wparam, lparam);
+	default:
+		return gApp->MessageHandler(hwnd, umsg, wparam, lparam);
 	}
 }

@@ -23,10 +23,8 @@ public:
 
 	bool Init(HWND hwnd, int width, int height);
 	bool Frame();
-	void Shutdown();
-
-private:
 	bool Render();
+	void Shutdown();
 
 private:
 	D3D* mD3D;
