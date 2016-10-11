@@ -169,3 +169,32 @@ void Text::ReleaseSentence()
 		SafeDelete(mSentence);
 	}
 }
+
+void Text::SetCpuRate(int cpuRate)
+{
+	mCpuRate = cpuRate;
+}
+
+void Text::SetFps(int fps)
+{
+	mFps = fps;
+}
+
+void Text::ShowPerformance(ID3D11DeviceContext* context, XMFLOAT4X4 world, XMFLOAT4X4 ortho)
+{
+	char fpsStr[16] = "FPS:";
+	char cpuStr[16] = "CPU:";
+	char tempStr[8];
+
+	// In _itoa_s, parameter '10' means we use Decimal System
+	_itoa_s(mFps, tempStr, 10);
+	strcat_s(fpsStr, tempStr);
+
+	_itoa_s(mCpuRate, tempStr, 10);
+	strcat_s(cpuStr, tempStr);
+	strcpy_s(tempStr, "%");
+	strcat_s(cpuStr, tempStr);
+
+	Render(context, fpsStr, 20, 20, XMFLOAT3(1.0f, 0.0f, 0.0f), world, ortho);
+	Render(context, cpuStr, 20, 40, XMFLOAT3(1.0f, 0.0f, 0.0f), world, ortho);
+}

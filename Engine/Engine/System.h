@@ -4,6 +4,8 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include <windows.h>
+#include "Fps.h"
+#include "Cpu.h"
 #include "Input.h"
 #include "Sound.h"
 #include "Timer.h"
@@ -32,6 +34,8 @@ private:
 	WCHAR* mAppName;
 	HINSTANCE mhInstance;
 
+	Fps* mFps;
+	Cpu* mCpu;
 	Timer* mTimer;
 	Input* mInput;
 	Sound* mSound;

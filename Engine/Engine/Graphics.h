@@ -23,7 +23,7 @@ public:
 	~Graphics();
 
 	bool Init(HWND hwnd, int width, int height);
-	bool Frame(float dt);
+	bool Frame(float dt, int fps, int cpuRate);
 	bool Render();
 	void Shutdown();
 
@@ -36,7 +36,5 @@ private:
 
 	Text*   mText;
 	Model*  mModel;
-
-	int mFrameTime;
 };
 #endif

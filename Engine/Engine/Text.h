@@ -28,6 +28,9 @@ public:
 	bool Init(ID3D11Device* device, ID3D11DeviceContext* context, HWND hwnd, int screenWidth, int screenHeight, char* fontDataFile, WCHAR* fontDDSFile, int textMaxLength, XMFLOAT4X4 baseViewMatrix);
 	bool Render(ID3D11DeviceContext* context, char* text, int posX, int posY, XMFLOAT3 color, XMFLOAT4X4 world, XMFLOAT4X4 ortho);
 	void Shutdown();
+	void SetFps(int fps);
+	void SetCpuRate(int cpuRate);
+	void ShowPerformance(ID3D11DeviceContext* context, XMFLOAT4X4 world, XMFLOAT4X4 ortho);
 
 private:
 	bool InitSentence(ID3D11Device* device, int maxLength);
@@ -41,6 +44,7 @@ private:
 	Font* mFont;
 	FontShader* mFontShader;
 
+	int mCpuRate, mFps;
 	int mScreenWidth, mScreenHeight;
 	XMFLOAT4X4 mBaseViewMatrix;
 };
