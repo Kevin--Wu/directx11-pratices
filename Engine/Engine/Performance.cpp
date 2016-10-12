@@ -1,21 +1,25 @@
-#include "Cpu.h"
+#include "Performance.h"
 
-Cpu::Cpu()
+Performance::Performance()
 {
 }
 
-Cpu::Cpu(const Cpu& other)
+Performance::Performance(const Performance&)
 {
 }
 
-Cpu::~Cpu()
+Performance::~Performance()
 {
 }
 
-void Cpu::Init()
+void Performance::Init()
 {
+	// Fps
+	mCount = 0;
+	mFps = 0;
+
+	// CpuRate
 	mCanReadCpu = true;
-
 	PDH_STATUS pdhStatus;
 	pdhStatus = PdhOpenQuery(NULL, 0, &mQueryHandle);
 	if (pdhStatus != ERROR_SUCCESS)
@@ -24,25 +28,31 @@ void Cpu::Init()
 	pdhStatus = PdhAddCounter(mQueryHandle, TEXT("\\Processor(_Total)\\% processor time"), 0, &mCounterHandle);
 	if (pdhStatus != ERROR_SUCCESS)
 		mCanReadCpu = false;
-
-	mLastSampleTime = GetTickCount();
 	mCpuUsage = 0;
+
+	mStartTime = timeGetTime();
 }
 
-void Cpu::Shutdown()
+void Performance::Shutdown()
 {
 	if (mCanReadCpu)
 		PdhCloseQuery(mQueryHandle);
 }
 
-void Cpu::Frame()
+void Performance::Frame()
 {
-	if (mCanReadCpu)
-	{
-		if (GetTickCount() >= (mLastSampleTime + 1000))
-		{
-			mLastSampleTime = GetTickCount();
+	++mCount;
 
+	if (timeGetTime() >= (mStartTime + 1000))
+	{
+		mStartTime = timeGetTime();
+		// calc fps
+		mFps = mCount;
+		mCount = 0;
+
+		// calc cpu rate
+		if (mCanReadCpu)
+		{
 			PdhCollectQueryData(mQueryHandle);
 			PDH_FMT_COUNTERVALUE value;
 			PdhGetFormattedCounterValue(mCounterHandle, PDH_FMT_LONG, NULL, &value);
@@ -51,13 +61,18 @@ void Cpu::Frame()
 	}
 }
 
-int Cpu::GetCpuPerCentage() const
+int Performance::GetFps() const
+{
+	return mFps;
+}
+
+int Performance::GetCpuRate() const
 {
 	int usage;
 	if (mCanReadCpu)
 		usage = static_cast<int>(mCpuUsage);
 	else
-		usage = 0;
+		usage = -1;
 
 	return usage;
 }

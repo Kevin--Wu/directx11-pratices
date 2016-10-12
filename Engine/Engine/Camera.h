@@ -29,4 +29,5 @@ private:
 	XMFLOAT3   mRot;
 	XMFLOAT4X4 mView;
 };
+
 #endif

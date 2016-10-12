@@ -2,12 +2,11 @@
 
 System::System()
 {
-	mFps = nullptr;
-	mCpu = nullptr;
 	mTimer = nullptr;
 	mInput = nullptr;
 	mSound = nullptr;
 	mGraphics = nullptr;
+	mPerformance = nullptr;
 }
 
 System::System(const System& other)
@@ -28,11 +27,8 @@ bool System::Init()
 	mTimer = new Timer;
 	Check(mTimer->Init());
 
-	mFps = new Fps;
-	mFps->Init();
-
-	mCpu = new Cpu;
-	mCpu->Init();
+	mPerformance = new Performance;
+	mPerformance->Init();
 
 	mInput = new Input;
 	Check(mInput->Init(mhInstance, mhWnd, screenWidth, screenHeight));
@@ -85,9 +81,12 @@ void System::Run()
 
 void System::Shutdown()
 {
-	if (mTimer)
+	SafeDelete(mTimer);
+
+	if (mPerformance)
 	{
-		SafeDelete(mTimer);
+		mPerformance->Shutdown();
+		SafeDelete(mPerformance);
 	}
 
 	if (mInput)
@@ -114,12 +113,11 @@ void System::Shutdown()
 bool System::Frame()
 {
 	mTimer->Frame();
-	mFps->Frame();
-	mCpu->Frame();
+	mPerformance->Frame();
 
 	Check(mInput->Frame());
 
-	Check(mGraphics->Frame(mTimer->GetFrameTime(), mFps->GetFps(), mCpu->GetCpuPerCentage()));
+	Check(mGraphics->Frame(mTimer->GetFrameTime(), mPerformance->GetFps(), mPerformance->GetCpuRate()));
 	Check(mGraphics->Render());
 
 	return true;

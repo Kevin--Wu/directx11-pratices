@@ -36,7 +36,8 @@ void Font::Shutdown()
 	if (mTexture)
 	{
 		mTexture->Shutdown();
-		SafeDelete(mTexture);
+		
+		(mTexture);
 	}
 }
 

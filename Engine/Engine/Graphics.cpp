@@ -66,15 +66,9 @@ void Graphics::Shutdown()
 		SafeDelete(mText);
 	}
 
-	if (mLight)
-	{
-		SafeDelete(mLight);
-	}
 
-	if (mCamera)
-	{
-		SafeDelete(mCamera);
-	}
+	SafeDelete(mLight);
+	SafeDelete(mCamera);
 
 	if (mD3D)
 	{
