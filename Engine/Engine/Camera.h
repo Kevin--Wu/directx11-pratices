@@ -22,6 +22,7 @@ public:
 	XMFLOAT3   GetPosition() const;
 	XMFLOAT3   GetRotation() const;
 
+	// Generate view matrix.
 	void Render();
 
 private:

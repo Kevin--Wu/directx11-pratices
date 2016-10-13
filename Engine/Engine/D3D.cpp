@@ -279,7 +279,6 @@ void D3D::Shutdown()
 void D3D::BeginScene(float red, float green, float blue, float alpha)
 {
 	float color[4] = {red, green, blue, alpha};
-
 	mDeviceContext->ClearRenderTargetView(mRenderTargetView, color);
 	mDeviceContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }

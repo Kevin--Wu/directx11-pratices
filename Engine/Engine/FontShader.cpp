@@ -45,12 +45,10 @@ void FontShader::Shutdown()
 
 bool FontShader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHAR* psPath)
 {
-	HRESULT result;
-
 	ID3D10Blob* errorMsg = nullptr;
 	ID3D10Blob* vsBuffer = nullptr;
 
-	result = D3DCompileFromFile(vsPath, NULL, NULL, "VS", "vs_5_0", 
+	HRESULT result = D3DCompileFromFile(vsPath, NULL, NULL, "VS", "vs_5_0",
 		D3D10_SHADER_ENABLE_STRICTNESS, 0, &vsBuffer, &errorMsg);
 	
 	if (FAILED(result))
@@ -111,7 +109,6 @@ bool FontShader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHA
 	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	matrixBufferDesc.MiscFlags = 0;
 	matrixBufferDesc.StructureByteStride = 0;
-
 	HR(device->CreateBuffer(&matrixBufferDesc, NULL, &mMatrixBuffer));
 
 	D3D11_BUFFER_DESC pixelBufferDesc;
@@ -121,12 +118,10 @@ bool FontShader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHA
 	pixelBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	pixelBufferDesc.MiscFlags = 0;
 	pixelBufferDesc.StructureByteStride = 0;
-
 	HR(device->CreateBuffer(&pixelBufferDesc, NULL, &mPixelBuffer));
 
-
-	D3D11_SAMPLER_DESC samplerDesc;
 	// Create a texture sampler state description.
+	D3D11_SAMPLER_DESC samplerDesc;
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -149,6 +144,7 @@ bool FontShader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHA
 bool FontShader::SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world,XMFLOAT4X4 view, XMFLOAT4X4 proj, XMFLOAT4 pixelColor,
 	ID3D11ShaderResourceView* texture)
 {
+	// Transpose the matrices to prepare them for the shader.
 	XMMATRIX w = XMMatrixTranspose(XMLoadFloat4x4(&world));
 	XMMATRIX v = XMMatrixTranspose(XMLoadFloat4x4(&view));
 	XMMATRIX p = XMMatrixTranspose(XMLoadFloat4x4(&proj));

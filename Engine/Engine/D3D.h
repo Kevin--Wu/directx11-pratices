@@ -21,7 +21,9 @@ public:
 	bool Init(HWND hwnd, int screenWidth, int screenHeight, bool vsync, bool fullscreen, float screenDepth, float screenNear);
 	void Shutdown();
 
+	// Clear rendertarget and depthstencil view.
 	void BeginScene(float red, float green, float blue, float alpha);
+	// Call swap chain's present method.
 	void EndScene();
 
 	void SetWorldMatrix(XMFLOAT4X4 world);
@@ -35,7 +37,7 @@ public:
 	XMMATRIX GetWorldMatrixXM() const;
 	XMMATRIX GetProjMatrixXM() const;
 	XMMATRIX GetOrthoMatrixXM() const;
-	void GetVideoCardInfo(char*, int&) const;
+	void GetVideoCardInfo(char* cardName, int& memory) const;
 
 	void TurnDepthOn() const;
 	void TurnDepthOff() const;

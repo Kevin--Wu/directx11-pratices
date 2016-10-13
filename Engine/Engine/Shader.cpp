@@ -23,8 +23,6 @@ Shader::~Shader()
 
 bool Shader::Init(HWND hwnd, ID3D11Device* device)
 {
-	//Check(InitShader(hwnd, device, L"Shaders/color.vs", L"Shaders/color.ps"));
-	//Check(InitShader(hwnd, device, L"Shaders/texture.vs", L"Shaders/texture.ps"));
 	Check(InitShader(hwnd, device, L"Shaders/light.vs", L"Shaders/light.ps"));
 
 	return true;

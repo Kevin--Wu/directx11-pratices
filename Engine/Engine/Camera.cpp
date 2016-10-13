@@ -65,10 +65,10 @@ void Camera::Render()
 
 	// Set the yaw (Y axis), pitch (X axis), and roll (Z axis) rotations in radians.
 	// 0.0174532925f is same to PI/180
-	float angle1ToRadian = XM_PI / 180;
-	float pitch = mRot.x * angle1ToRadian;
-	float yaw = mRot.y * angle1ToRadian;
-	float roll = mRot.z * angle1ToRadian;
+	float angleToRadian = XM_PI / 180;
+	float pitch = mRot.x * angleToRadian;
+	float yaw = mRot.y * angleToRadian;
+	float roll = mRot.z * angleToRadian;
 	XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
 
 	vUp = XMVector3TransformCoord(vUp, rotationMatrix);
