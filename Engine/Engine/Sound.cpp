@@ -17,11 +17,10 @@ Sound::~Sound()
 
 bool Sound::Init(HWND hwnd)
 {
-	Check(InitDirectSound(hwnd));
-	// Note that your download folder doesn't include this wav file because it's too big.
+	// Check(InitDirectSound(hwnd));
 	// You could try sound01.wav to test.
-	Check(LoadWavFile("Musics/DeepSeaGirl.wav", &mSecondaryBuffer1));
-	Check(PlayWavFile());
+	// Check(LoadWavFile("Musics/DeepSeaGirl.wav", &mSecondaryBuffer1));
+	// Check(PlayWavFile());
 
 	return true;
 }
