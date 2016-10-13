@@ -6,12 +6,12 @@
 */*/*/Release/
 */.vs/
 */*/.vs/
-*/*.VC.db
-*/*/*.VC.db
-*/*.VC.VC.opendb
-*/*/*.VC.VC.opendb
 */x64
 */*/x64
+*.tmp
+*.VC.db
+*.VC.VC.opendb
+
 DeepSeaGirl.wav
 shader_compile_log.txt
 parser-error-log.txt
