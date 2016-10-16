@@ -7,6 +7,7 @@ System::System()
 	mSound = nullptr;
 	mGraphics = nullptr;
 	mPerformance = nullptr;
+	mPositon = nullptr;
 }
 
 System::System(const System& other)
@@ -38,6 +39,8 @@ bool System::Init()
 
 	mSound = new Sound;
 	Check(mSound->Init(mhWnd));
+
+	mPositon = new Position;
 
 	return true;
 }
@@ -81,6 +84,7 @@ void System::Run()
 
 void System::Shutdown()
 {
+	SafeDelete(mPositon);
 	SafeDelete(mTimer);
 
 	if (mPerformance)
@@ -115,9 +119,14 @@ bool System::Frame()
 	mTimer->Frame();
 	mPerformance->Frame();
 
+	mPositon->SetFrameTime(mTimer->GetFrameTime());
+	mPositon->TurnLeft(mInput->IsLeftArrowPressed());
+	mPositon->TurnRight(mInput->IsRightArrowPressed());
+	float rotY = mPositon->GetRotation();
+
 	Check(mInput->Frame());
 
-	Check(mGraphics->Frame(mTimer->GetFrameTime(), mPerformance->GetFps(), mPerformance->GetCpuRate()));
+	Check(mGraphics->Frame(mTimer->GetFrameTime(), mPerformance->GetFps(), mPerformance->GetCpuRate(), rotY));
 	Check(mGraphics->Render());
 
 	return true;

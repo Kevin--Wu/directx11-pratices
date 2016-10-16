@@ -113,9 +113,25 @@ bool Input::ReadMouse()
 	return true;
 }
 
-bool Input::IsEscapePressed()
+bool Input::IsEscapePressed() const
 {
 	if (mKeyboardState[DIK_ESCAPE] & 0x80)
+		return true;
+
+	return false;
+}
+
+bool Input::IsLeftArrowPressed() const
+{
+	if (mKeyboardState[DIK_LEFTARROW] & 0x80)
+		return true;
+
+	return false;
+}
+
+bool Input::IsRightArrowPressed() const
+{
+	if (mKeyboardState[DIK_RIGHTARROW] & 0x80)
 		return true;
 
 	return false;

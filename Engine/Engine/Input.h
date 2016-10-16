@@ -20,7 +20,10 @@ public:
 	bool Frame();
 	void Shutdown();
 	void GetMouseLocation(int& mouseX, int& mouseY);
-	bool IsEscapePressed();
+
+	bool IsEscapePressed() const;
+	bool IsLeftArrowPressed() const;
+	bool IsRightArrowPressed() const;
 
 private:
 	bool ReadKeyboard();

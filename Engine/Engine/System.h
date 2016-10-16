@@ -9,6 +9,7 @@
 #include "Timer.h"
 #include "Graphics.h"
 #include "Performance.h"
+#include "Position.h"
 
 class System
 {
@@ -38,6 +39,7 @@ private:
 	Sound* mSound;
 	Graphics* mGraphics;
 	Performance* mPerformance;
+	Position* mPositon;
 };
 
 static System* gApp = nullptr;

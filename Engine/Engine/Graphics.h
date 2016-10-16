@@ -4,10 +4,12 @@
 #include <windows.h>
 #include "D3D.h"
 #include "Text.h"
-#include "Timer.h"
 #include "Model.h"
+#include "ModelList.h"
+#include "Timer.h"
 #include "Light.h"
 #include "Camera.h"
+#include "Frustum.h"
 #include "Shader.h"
 
 const bool GRAPHICS_FULL_SCREEN = false;
@@ -23,7 +25,7 @@ public:
 	~Graphics();
 
 	bool Init(HWND hwnd, int width, int height);
-	bool Frame(float dt, int fps, int cpuRate);
+	bool Frame(float dt, int fps, int cpuRate, float rotY);
 	bool Render();
 	void Shutdown();
 
@@ -32,9 +34,11 @@ private:
 	Timer*  mTimer;
 	Light*  mLight;
 	Camera* mCamera;
+	Frustum* mFrustum;
 	Shader* mShader;
 
 	Text*   mText;
 	Model*  mModel;
+	ModelList* mModelList;
 };
 #endif
