@@ -114,14 +114,36 @@ bool Graphics::Render()
 	XMFLOAT4X4 proj = mD3D->GetProjMatrix();
 	XMFLOAT4X4 ortho = mD3D->GetOrthoMatrix();
 
+	// Construct frustum ready to clip outside object.
+	mFrustum->ConstructFrustum(GRAPHICS_SCREEN_DEPTH, proj, view);
+
 	////////////////////////////////////////////////////////////////////////
 	// 3D Model Rendering
 	////////////////////////////////////////////////////////////////////////
-	// IA stage
-	mModel->Render(mD3D->GetDeviceContext());
-
-	// DrawIndexed
-	mShader->Render(mD3D->GetDeviceContext(), mModel->GetIndexCount(), world, view, proj, mModel->GetTexture(), mLight->GetAmbientColor(), mLight->GetDiffuseColor(), mLight->GetDiffuseDir(), mLight->GetSpecularPower(), mLight->GetSpecularColor(), mCamera->GetPosition());
+	float sphereRadius = 1.0f;
+	XMMATRIX w = mD3D->GetWorldMatrixXM();
+	int renderCount = 0;
+	for (int i = 0; i < mModelList->GetModelCount(); ++i)
+	{
+		float posX, posY, posZ;
+		XMFLOAT4 color;
+		// Get the position and color of the sphere model at this index.
+		mModelList->GetModelData(i, posX, posY, posZ, color);
+		if (mFrustum->CheckSphere(posX, posY, posZ, sphereRadius))
+		{
+			w *= XMMatrixTranslation(posX, posY, posZ);
+			XMFLOAT4X4 newWorld;
+			XMStoreFloat4x4(&newWorld, w);
+			// IA stage
+			mModel->Render(mD3D->GetDeviceContext());
+			// DrawIndexed
+			mShader->Render(mD3D->GetDeviceContext(), mModel->GetIndexCount(), newWorld, view, proj, mModel->GetTexture(), mLight->GetAmbientColor(), mLight->GetDiffuseColor(), mLight->GetDiffuseDir(), mLight->GetSpecularPower(), mLight->GetSpecularColor(), mCamera->GetPosition());
+			// Before rendering the next sphere, we reset the world matrix
+			w = mD3D->GetWorldMatrixXM();
+			// Count the number of rendered sphere
+			++renderCount;
+		}
+	}
 
 	////////////////////////////////////////////////////////////////////////
 	// 2D Font Rendering
@@ -138,6 +160,13 @@ bool Graphics::Render()
 	int cardMemory = 0;
 	mD3D->GetVideoCardInfo(cardName, cardMemory);
 	mText->Render(mD3D->GetDeviceContext(), cardName, 20, 60, XMFLOAT3(1.0f, 0.0f, 0.0f), world, ortho);
+	
+	// Show the counts of rendered spheres.
+	char renderCountsStr[32] = "Render Counts:";
+	char tmp[8];
+	_itoa_s(renderCount, tmp, 10);
+	strcat_s(renderCountsStr, tmp);
+	mText->Render(mD3D->GetDeviceContext(), renderCountsStr, 20, 80, XMFLOAT3(1.0f, 0.0f, 0.0f), world, ortho);
 
 	// After rendering 2D objects, restore render states.
 	mD3D->TurnBlendOff();

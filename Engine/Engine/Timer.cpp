@@ -41,5 +41,5 @@ void Timer::Frame()
 
 float Timer::GetFrameTime() const
 {
-	return mFrameTime * 0.001f;
+	return mFrameTime;
 }
