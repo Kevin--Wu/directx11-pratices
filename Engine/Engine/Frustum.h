@@ -1,6 +1,7 @@
 #ifndef _FRUSTUM_H_
 #define _FRUSTUM_H_
 
+#include "Utils.h"
 #include <DirectXMath.h>
 using namespace DirectX;
 

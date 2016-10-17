@@ -39,10 +39,10 @@ bool Graphics::Init(HWND hwnd, int width, int height)
 	mLight->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	mModel = new Model;
-	Check(mModel->Init(mD3D->GetDevice(), "Models/sphere.txt", L"Textures/seafloor.dds"));
+	Check(mModel->Init(mD3D->GetDevice(), "Models/cube.txt", L"Textures/seafloor.dds"));
 
 	mModelList = new ModelList;
-	Check(mModelList->Init(25));
+	Check(mModelList->Init(100));
 
 	mText = new Text;
 	mText->Init(mD3D->GetDevice(), mD3D->GetDeviceContext(), hwnd, width, height, "Fonts/fontdata.txt", L"Fonts/font.dds", 32, mCamera->GetViewMatrix());
@@ -114,26 +114,23 @@ bool Graphics::Render()
 	XMFLOAT4X4 proj = mD3D->GetProjMatrix();
 	XMFLOAT4X4 ortho = mD3D->GetOrthoMatrix();
 
-	mText->SetFps((int)(view._13 * 10));
-	mText->SetCpuRate((int)(view._33 * 10));
-
 	// Construct frustum ready to clip outside object.
 	mFrustum->ConstructFrustum(GRAPHICS_SCREEN_DEPTH, proj, view);
 
 	////////////////////////////////////////////////////////////////////////
 	// 3D Model Rendering
 	////////////////////////////////////////////////////////////////////////
-	float sphereRadius = 1.0f;
+	float radius = 1.0f;
 	XMMATRIX w = XMLoadFloat4x4(&world);
-	int renderCount = 0;
 	int modelCount = mModelList->GetModelCount();
-	for (int i = 0; i < mModelList->GetModelCount(); ++i)
+	int renderCount = 0;
+	float posX, posY, posZ;
+	XMFLOAT4 color;
+	for (int i = 0; i < modelCount; ++i)
 	{
-		float posX, posY, posZ;
-		XMFLOAT4 color;
 		// Get the position and color of the sphere model at this index.
 		mModelList->GetModelData(i, posX, posY, posZ, color);
-		if (mFrustum->CheckSphere(posX, posY, posZ, sphereRadius))
+		if (mFrustum->CheckCube(posX, posY, posZ, radius))
 		{
 			w *= XMMatrixTranslation(posX, posY, posZ);
 			XMFLOAT4X4 newWorld;

@@ -84,6 +84,9 @@
     <ClInclude Include="Position.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Third\DrimoonDebug.h">
+      <Filter>Third</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -148,6 +151,9 @@
     </ClCompile>
     <ClCompile Include="Position.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Third\DrimoonDebug.cpp">
+      <Filter>Third</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

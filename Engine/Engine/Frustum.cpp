@@ -22,7 +22,7 @@ void Frustum::ConstructFrustum(float screenDepth, XMFLOAT4X4 proj, XMFLOAT4X4 vi
 	proj._43 = -r*nz;
 
 	// frustum matrix
-	XMMATRIX f =  XMLoadFloat4x4(&proj) * XMLoadFloat4x4(&view);
+	XMMATRIX f = XMLoadFloat4x4(&view) * XMLoadFloat4x4(&proj);
 	XMFLOAT4X4 M;
 	XMStoreFloat4x4(&M, f);
 
@@ -89,71 +89,46 @@ bool Frustum::CheckPoint(XMFLOAT3 point)
 bool Frustum::CheckCube(float xCenter, float yCenter, float zCenter, float radius)
 {
 	XMFLOAT3 tmp;
-	XMVECTOR v;
 	float dot;
 	for (int i = 0; i < 6; ++i)
 	{
 		tmp = XMFLOAT3(xCenter - radius, yCenter - radius, zCenter - radius);
-		v = XMLoadFloat3(&tmp);
-		XMPlaneDotCoord(XMLoadFloat4(&mPlanes[i]), v);
-		XMStoreFloat3(&tmp, v);
-		dot = tmp.x;
+		dot = mPlanes[i].x*tmp.x + mPlanes[i].y*tmp.y + mPlanes[i].z*tmp.z + mPlanes[i].w;
 		if (dot >= 0.0f)
 			continue;
 
 		tmp = XMFLOAT3(xCenter + radius, yCenter - radius, zCenter - radius);
-		v = XMLoadFloat3(&tmp);
-		XMPlaneDotCoord(XMLoadFloat4(&mPlanes[i]), v);
-		XMStoreFloat3(&tmp, v);
-		dot = tmp.x;
+		dot = mPlanes[i].x*tmp.x + mPlanes[i].y*tmp.y + mPlanes[i].z*tmp.z + mPlanes[i].w;
 		if (dot >= 0.0f)
 			continue;
 
 		tmp = XMFLOAT3(xCenter - radius, yCenter + radius, zCenter - radius);
-		v = XMLoadFloat3(&tmp);
-		XMPlaneDotCoord(XMLoadFloat4(&mPlanes[i]), v);
-		XMStoreFloat3(&tmp, v);
-		dot = tmp.x;
+		dot = mPlanes[i].x*tmp.x + mPlanes[i].y*tmp.y + mPlanes[i].z*tmp.z + mPlanes[i].w;
 		if (dot >= 0.0f)
 			continue;
 
 		tmp = XMFLOAT3(xCenter + radius, yCenter + radius, zCenter - radius);
-		v = XMLoadFloat3(&tmp);
-		XMPlaneDotCoord(XMLoadFloat4(&mPlanes[i]), v);
-		XMStoreFloat3(&tmp, v);
-		dot = tmp.x;
+		dot = mPlanes[i].x*tmp.x + mPlanes[i].y*tmp.y + mPlanes[i].z*tmp.z + mPlanes[i].w;
 		if (dot >= 0.0f)
 			continue;
 
 		tmp = XMFLOAT3(xCenter - radius, yCenter - radius, zCenter + radius);
-		v = XMLoadFloat3(&tmp);
-		XMPlaneDotCoord(XMLoadFloat4(&mPlanes[i]), v);
-		XMStoreFloat3(&tmp, v);
-		dot = tmp.x;
+		dot = mPlanes[i].x*tmp.x + mPlanes[i].y*tmp.y + mPlanes[i].z*tmp.z + mPlanes[i].w;
 		if (dot >= 0.0f)
 			continue;
 
 		tmp = XMFLOAT3(xCenter + radius, yCenter - radius, zCenter + radius);
-		v = XMLoadFloat3(&tmp);
-		XMPlaneDotCoord(XMLoadFloat4(&mPlanes[i]), v);
-		XMStoreFloat3(&tmp, v);
-		dot = tmp.x;
+		dot = mPlanes[i].x*tmp.x + mPlanes[i].y*tmp.y + mPlanes[i].z*tmp.z + mPlanes[i].w;
 		if (dot >= 0.0f)
 			continue;
 
 		tmp = XMFLOAT3(xCenter - radius, yCenter + radius, zCenter + radius);
-		v = XMLoadFloat3(&tmp);
-		XMPlaneDotCoord(XMLoadFloat4(&mPlanes[i]), v);
-		XMStoreFloat3(&tmp, v);
-		dot = tmp.x;
+		dot = mPlanes[i].x*tmp.x + mPlanes[i].y*tmp.y + mPlanes[i].z*tmp.z + mPlanes[i].w;
 		if (dot >= 0.0f)
 			continue;
 
 		tmp = XMFLOAT3(xCenter + radius, yCenter + radius, zCenter + radius);
-		v = XMLoadFloat3(&tmp);
-		XMPlaneDotCoord(XMLoadFloat4(&mPlanes[i]), v);
-		XMStoreFloat3(&tmp, v);
-		dot = tmp.x;
+		dot = mPlanes[i].x*tmp.x + mPlanes[i].y*tmp.y + mPlanes[i].z*tmp.z + mPlanes[i].w;
 		if (dot >= 0.0f)
 			continue;
 
@@ -164,16 +139,15 @@ bool Frustum::CheckCube(float xCenter, float yCenter, float zCenter, float radiu
 
 bool Frustum::CheckSphere(float xCenter, float yCenter, float zCenter, float radius)
 {
-	XMFLOAT3 tmp = XMFLOAT3(xCenter, yCenter, zCenter);
-	XMVECTOR v;
-	v = XMLoadFloat3(&tmp);
-	float dot;
+	XMFLOAT4 tmp;
+	tmp.x = xCenter;
+	tmp.y = yCenter;
+	tmp.z = zCenter;
+	tmp.w = 1.0f;
 	for (int i = 0; i < 6; ++i)
 	{
-		XMPlaneDotCoord(XMLoadFloat4(&mPlanes[i]), v);
-		XMStoreFloat3(&tmp, v);
-		dot = tmp.x;
-		if (dot + radius < 0.0f)
+		float dot = mPlanes[i].x*tmp.x + mPlanes[i].y*tmp.y + mPlanes[i].z*tmp.z + mPlanes[i].w + radius;
+		if (dot < 0.0f)
 			return false;
 	}
 	return true;
@@ -182,71 +156,46 @@ bool Frustum::CheckSphere(float xCenter, float yCenter, float zCenter, float rad
 bool Frustum::CheckRectangle(float xCenter, float yCenter, float zCenter, float xSize, float ySize, float zSize)
 {
 	XMFLOAT3 tmp;
-	XMVECTOR v;
 	float dot;
 	for (int i = 0; i < 6; ++i)
 	{
 		tmp = XMFLOAT3(xCenter - xSize, yCenter - ySize, zCenter - zSize);
-		v = XMLoadFloat3(&tmp);
-		XMPlaneDotCoord(XMLoadFloat4(&mPlanes[i]), v);
-		XMStoreFloat3(&tmp, v);
-		dot = tmp.x;
+		dot = mPlanes[i].x*tmp.x + mPlanes[i].y*tmp.y + mPlanes[i].z*tmp.z + mPlanes[i].w;
 		if (dot >= 0.0f)
 			continue;
 
 		tmp = XMFLOAT3(xCenter + xSize, yCenter - ySize, zCenter - zSize);
-		v = XMLoadFloat3(&tmp);
-		XMPlaneDotCoord(XMLoadFloat4(&mPlanes[i]), v);
-		XMStoreFloat3(&tmp, v);
-		dot = tmp.x;
+		dot = mPlanes[i].x*tmp.x + mPlanes[i].y*tmp.y + mPlanes[i].z*tmp.z + mPlanes[i].w;
 		if (dot >= 0.0f)
 			continue;
 
 		tmp = XMFLOAT3(xCenter - xSize, yCenter + ySize, zCenter - zSize);
-		v = XMLoadFloat3(&tmp);
-		XMPlaneDotCoord(XMLoadFloat4(&mPlanes[i]), v);
-		XMStoreFloat3(&tmp, v);
-		dot = tmp.x;
+		dot = mPlanes[i].x*tmp.x + mPlanes[i].y*tmp.y + mPlanes[i].z*tmp.z + mPlanes[i].w;
 		if (dot >= 0.0f)
 			continue;
 
 		tmp = XMFLOAT3(xCenter + xSize, yCenter + ySize, zCenter - zSize);
-		v = XMLoadFloat3(&tmp);
-		XMPlaneDotCoord(XMLoadFloat4(&mPlanes[i]), v);
-		XMStoreFloat3(&tmp, v);
-		dot = tmp.x;
+		dot = mPlanes[i].x*tmp.x + mPlanes[i].y*tmp.y + mPlanes[i].z*tmp.z + mPlanes[i].w;
 		if (dot >= 0.0f)
 			continue;
 
 		tmp = XMFLOAT3(xCenter - xSize, yCenter - ySize, zCenter + zSize);
-		v = XMLoadFloat3(&tmp);
-		XMPlaneDotCoord(XMLoadFloat4(&mPlanes[i]), v);
-		XMStoreFloat3(&tmp, v);
-		dot = tmp.x;
+		dot = mPlanes[i].x*tmp.x + mPlanes[i].y*tmp.y + mPlanes[i].z*tmp.z + mPlanes[i].w;
 		if (dot >= 0.0f)
 			continue;
 
 		tmp = XMFLOAT3(xCenter + xSize, yCenter - ySize, zCenter + zSize);
-		v = XMLoadFloat3(&tmp);
-		XMPlaneDotCoord(XMLoadFloat4(&mPlanes[i]), v);
-		XMStoreFloat3(&tmp, v);
-		dot = tmp.x;
+		dot = mPlanes[i].x*tmp.x + mPlanes[i].y*tmp.y + mPlanes[i].z*tmp.z + mPlanes[i].w;
 		if (dot >= 0.0f)
 			continue;
 
 		tmp = XMFLOAT3(xCenter - xSize, yCenter + ySize, zCenter + zSize);
-		v = XMLoadFloat3(&tmp);
-		XMPlaneDotCoord(XMLoadFloat4(&mPlanes[i]), v);
-		XMStoreFloat3(&tmp, v);
-		dot = tmp.x;
+		dot = mPlanes[i].x*tmp.x + mPlanes[i].y*tmp.y + mPlanes[i].z*tmp.z + mPlanes[i].w;
 		if (dot >= 0.0f)
 			continue;
 
 		tmp = XMFLOAT3(xCenter + xSize, yCenter + ySize, zCenter + zSize);
-		v = XMLoadFloat3(&tmp);
-		XMPlaneDotCoord(XMLoadFloat4(&mPlanes[i]), v);
-		XMStoreFloat3(&tmp, v);
-		dot = tmp.x;
+		dot = mPlanes[i].x*tmp.x + mPlanes[i].y*tmp.y + mPlanes[i].z*tmp.z + mPlanes[i].w;
 		if (dot >= 0.0f)
 			continue;
 
