@@ -39,7 +39,7 @@ bool Graphics::Init(HWND hwnd, int width, int height)
 	mLight->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	mModel = new Model;
-	Check(mModel->Init(mD3D->GetDevice(), "Models/sphere.txt", L"Textures/flare.dds"));
+	Check(mModel->Init(mD3D->GetDevice(), "Models/sphere.txt", L"Textures/seafloor.dds"));
 
 	mModelList = new ModelList;
 	Check(mModelList->Init(25));
@@ -105,7 +105,7 @@ bool Graphics::Render()
 {
 	mD3D->BeginScene(0.6f, 0.74f, 0.92f, 1.0f);
 
-	// After call Frame func, calc the new view matrix.
+	// After call Frame func, re-calculate the new view matrix.
 	mCamera->Render();
 
 	// Base 3D matrix
@@ -114,6 +114,9 @@ bool Graphics::Render()
 	XMFLOAT4X4 proj = mD3D->GetProjMatrix();
 	XMFLOAT4X4 ortho = mD3D->GetOrthoMatrix();
 
+	mText->SetFps((int)(view._13 * 10));
+	mText->SetCpuRate((int)(view._33 * 10));
+
 	// Construct frustum ready to clip outside object.
 	mFrustum->ConstructFrustum(GRAPHICS_SCREEN_DEPTH, proj, view);
 
@@ -121,8 +124,9 @@ bool Graphics::Render()
 	// 3D Model Rendering
 	////////////////////////////////////////////////////////////////////////
 	float sphereRadius = 1.0f;
-	XMMATRIX w = mD3D->GetWorldMatrixXM();
+	XMMATRIX w = XMLoadFloat4x4(&world);
 	int renderCount = 0;
+	int modelCount = mModelList->GetModelCount();
 	for (int i = 0; i < mModelList->GetModelCount(); ++i)
 	{
 		float posX, posY, posZ;
@@ -137,7 +141,7 @@ bool Graphics::Render()
 			// IA stage
 			mModel->Render(mD3D->GetDeviceContext());
 			// DrawIndexed
-			mShader->Render(mD3D->GetDeviceContext(), mModel->GetIndexCount(), newWorld, view, proj, mModel->GetTexture(), mLight->GetAmbientColor(), mLight->GetDiffuseColor(), mLight->GetDiffuseDir(), mLight->GetSpecularPower(), mLight->GetSpecularColor(), mCamera->GetPosition());
+			mShader->Render(mD3D->GetDeviceContext(), mModel->GetIndexCount(), newWorld, view, proj, mModel->GetTexture(), mLight->GetAmbientColor(), color, mLight->GetDiffuseDir(), mLight->GetSpecularPower(), mLight->GetSpecularColor(), mCamera->GetPosition());
 			// Before rendering the next sphere, we reset the world matrix
 			w = mD3D->GetWorldMatrixXM();
 			// Count the number of rendered sphere

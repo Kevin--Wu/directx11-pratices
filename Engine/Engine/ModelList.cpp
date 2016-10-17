@@ -33,13 +33,12 @@ bool ModelList::Init(int modelCount)
 	mModelInfoList = new ModelInfo[mModelCount];
 
 	srand((unsigned int)time(NULL));
-	float r, g, b;
 	for (int i = 0; i < modelCount; ++i)
 	{
-		r = static_cast<float>(rand() / RAND_MAX);
-		g = static_cast<float>(rand() / RAND_MAX);
-		b = static_cast<float>(rand() / RAND_MAX);
-		mModelInfoList[i].color = XMFLOAT4(r, g, b, 1.0f);
+		mModelInfoList[i].color.x = (float)(rand()) / RAND_MAX;
+		mModelInfoList[i].color.y = (float)(rand()) / RAND_MAX;
+		mModelInfoList[i].color.z = (float)(rand()) / RAND_MAX;
+		mModelInfoList[i].color.w = 1.0f;
 
 		mModelInfoList[i].posX = (((float)rand() - (float)rand()) / RAND_MAX) * 10.0f;
 		mModelInfoList[i].posY = (((float)rand() - (float)rand()) / RAND_MAX) * 10.0f;

@@ -14,12 +14,16 @@ Camera::~Camera()
 
 void Camera::SetPosition(float x, float y, float z)
 {
-	mPos = XMFLOAT3(x, y, z);
+	mPos.x = x;
+	mPos.y = y;
+	mPos.z = z;
 }
 
 void Camera::SetRotation(float x, float y, float z)
 {
-	mRot = XMFLOAT3(x, y, z);
+	mRot.x = x;
+	mRot.y = y;
+	mRot.z = z;
 }
 
 XMVECTOR Camera::GetPositionXM() const
@@ -57,25 +61,18 @@ void Camera::Render()
 {
 	XMFLOAT4 pos(mPos.x, mPos.y, mPos.z, 0.0f);
 	XMFLOAT4 up(0.0f, 1.0f, 0.0f, 0.0f);
-	XMFLOAT4 lookAt(0.0f, 0.0f, 1.0f, 0.0f);
-
 	XMVECTOR vPos = XMLoadFloat4(&pos);
 	XMVECTOR vUp = XMLoadFloat4(&up);
+
+	XMFLOAT4 lookAt;
+	// Calculate the rotation in radians.
+	float radians = mRot.y * (XM_PI / 180);
+	// Setup where the camera is looking.
+	lookAt.x = sinf(radians) + mPos.x;
+	lookAt.y = mPos.y;
+	lookAt.z = cosf(radians) + mPos.z;
 	XMVECTOR vLookAt = XMLoadFloat4(&lookAt);
 
-	// Set the yaw (Y axis), pitch (X axis), and roll (Z axis) rotations in radians.
-	// 0.0174532925f is same to PI/180
-	float angleToRadian = XM_PI / 180;
-	float pitch = mRot.x * angleToRadian;
-	float yaw = mRot.y * angleToRadian;
-	float roll = mRot.z * angleToRadian;
-	XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
-
-	vUp = XMVector3TransformCoord(vUp, rotationMatrix);
-	vLookAt = XMVector3TransformCoord(vLookAt, rotationMatrix);
-
-	// Translate the rotated camera position to the location of the viewer.
-	vLookAt = vPos + vLookAt;
 	XMMATRIX viewMatrix = XMMatrixLookAtLH(vPos, vLookAt, vUp);
 	XMStoreFloat4x4(&mView, viewMatrix);
 }
