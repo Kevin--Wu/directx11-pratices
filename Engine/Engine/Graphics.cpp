@@ -39,7 +39,8 @@ bool Graphics::Init(HWND hwnd, int width, int height)
 	mLight->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	mModel = new Model;
-	Check(mModel->Init(mD3D->GetDevice(), "Models/cube.txt", L"Textures/seafloor.dds"));
+	WCHAR* textureNames[2] = { L"Textures/dirt01.dds" , L"Textures/stone01.dds" };
+	Check(mModel->Init(mD3D->GetDevice(), "Models/sphere.txt", textureNames, 2));
 
 	mModelList = new ModelList;
 	Check(mModelList->Init(100));
@@ -138,7 +139,7 @@ bool Graphics::Render()
 			// IA stage
 			mModel->Render(mD3D->GetDeviceContext());
 			// DrawIndexed
-			mShader->Render(mD3D->GetDeviceContext(), mModel->GetIndexCount(), newWorld, view, proj, mModel->GetTexture(), mLight->GetAmbientColor(), color, mLight->GetDiffuseDir(), mLight->GetSpecularPower(), mLight->GetSpecularColor(), mCamera->GetPosition());
+			mShader->Render(mD3D->GetDeviceContext(), mModel->GetIndexCount(), newWorld, view, proj, mModel->GetTextureArray(), mLight->GetAmbientColor(), mLight->GetDiffuseColor(), mLight->GetDiffuseDir(), mLight->GetSpecularPower(), mLight->GetSpecularColor(), mCamera->GetPosition());
 			// Before rendering the next sphere, we reset the world matrix
 			w = mD3D->GetWorldMatrixXM();
 			// Count the number of rendered sphere

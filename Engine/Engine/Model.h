@@ -7,7 +7,7 @@
 using namespace DirectX;
 
 #include "Utils.h"
-#include "Texture.h"
+#include "TextureArray.h"
 
 class Model
 {
@@ -32,13 +32,13 @@ public:
 	Model(const Model& other);
 	~Model();
 
-	bool Init(ID3D11Device* device, char* modelName, WCHAR* textureName);
+	bool Init(ID3D11Device* device, char* modelName, WCHAR** textureNames, int texNum);
 	void Render(ID3D11DeviceContext* context);
 	void Shutdown();
 
 	int GetVertexCount() const { return mVertexCount; }
 	int GetIndexCount() const { return mIndexCount; }
-	ID3D11ShaderResourceView* GetTexture() const;
+	ID3D11ShaderResourceView** GetTextureArray() const;
 
 private:
 	bool InitBuffers(ID3D11Device* device);
@@ -46,7 +46,6 @@ private:
 	void ShutdownBuffers();
 
 	bool LoadModel(char*);
-	void ReleaseModel();
 
 private:
 	ID3D11Buffer* mVertexBuffer;
@@ -54,7 +53,7 @@ private:
 	int mVertexCount;
 	int mIndexCount;
 
-	Texture* mTexture;
+	TextureArray* mTextureArray;
 	ModelType* mModelData;
 };
 

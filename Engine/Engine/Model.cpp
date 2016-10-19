@@ -5,7 +5,7 @@ Model::Model()
 	mVertexBuffer = nullptr;
 	mIndexBuffer = nullptr;
 
-	mTexture = nullptr;
+	mTextureArray = nullptr;
 	mModelData = nullptr;
 }
 
@@ -17,14 +17,14 @@ Model::~Model()
 {
 }
 
-bool Model::Init(ID3D11Device* device, char* modelName, WCHAR* textureName)
+bool Model::Init(ID3D11Device* device, char* modelName, WCHAR** textureNames, int texNum)
 {
 	Check(LoadModel(modelName));
 
 	Check(InitBuffers(device));
 
-	mTexture = new Texture;
-	Check(mTexture->Init(device, textureName));
+	mTextureArray = new TextureArray;
+	Check(mTextureArray->Init(device, textureNames, texNum));
 
 	return true;
 }
@@ -36,10 +36,10 @@ void Model::Render(ID3D11DeviceContext* context)
 
 void Model::Shutdown()
 {
-	if (mTexture)
+	if (mTextureArray)
 	{
-		mTexture->Shutdown();
-		SafeDelete(mTexture);
+		mTextureArray->Shutdown();
+		SafeDelete(mTextureArray);
 	}
 
 	if (mModelData)
@@ -120,9 +120,9 @@ void Model::ShutdownBuffers()
 	ReleaseCOM(mIndexBuffer);
 }
 
-ID3D11ShaderResourceView* Model::GetTexture() const
+ID3D11ShaderResourceView** Model::GetTextureArray() const
 {
-	return mTexture->GetTexture();
+	return mTextureArray->GetTextureArray();
 }
 
 bool Model::LoadModel(char* modelName)

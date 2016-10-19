@@ -29,12 +29,11 @@ bool Shader::Init(HWND hwnd, ID3D11Device* device)
 }
 
 bool Shader::Render(ID3D11DeviceContext* context, int indexCount, 
-	XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj, 
-	ID3D11ShaderResourceView* texture, 
+	XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView** textureArray,
 	XMFLOAT4 ambientColor, XMFLOAT4 lightColor, XMFLOAT3 lightDir, float specularPower, XMFLOAT4 specularColor,
 	XMFLOAT3 cameraPos)
 {
-	Check(SetShaderParameters(context, world, view, proj, texture, ambientColor, lightColor, lightDir, specularPower, specularColor, cameraPos));
+	Check(SetShaderParameters(context, world, view, proj, textureArray, ambientColor, lightColor, lightDir, specularPower, specularColor, cameraPos));
 
 	RenderShader(context, indexCount);
 
@@ -166,10 +165,8 @@ bool Shader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHAR* p
 	return true;
 }
 
-bool Shader::SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world,XMFLOAT4X4 view, XMFLOAT4X4 proj, 
-	ID3D11ShaderResourceView* texture, 
-	XMFLOAT4 ambientColor, XMFLOAT4 lightColor, XMFLOAT3 lightDir, float specularPower, XMFLOAT4 specularColor,
-	XMFLOAT3 cameraPos)
+bool Shader::SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world,XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView** textureArray,
+	XMFLOAT4 ambientColor, XMFLOAT4 lightColor, XMFLOAT3 lightDir, float specularPower, XMFLOAT4 specularColor, XMFLOAT3 cameraPos)
 {
 	XMMATRIX w = XMMatrixTranspose(XMLoadFloat4x4(&world));
 	XMMATRIX v = XMMatrixTranspose(XMLoadFloat4x4(&view));
@@ -203,7 +200,7 @@ bool Shader::SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world,
 	context->Unmap(mCameraBuffer, 0);
 	context->VSSetConstantBuffers(1, 1, &mCameraBuffer);
 
-	context->PSSetShaderResources(0, 1, &texture);
+	context->PSSetShaderResources(0, 2, textureArray);
 
 	return true;
 }

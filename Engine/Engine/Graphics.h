@@ -13,7 +13,7 @@
 #include "Shader.h"
 
 const bool GRAPHICS_FULL_SCREEN = false;
-const bool GRAPHICS_VSYNC_ENABLE = true;
+const bool GRAPHICS_VSYNC_ENABLE = false;
 const float GRAPHICS_SCREEN_DEPTH = 1000.0f;
 const float GRAPHICS_SCREEN_NEAR = 1.0f;
 

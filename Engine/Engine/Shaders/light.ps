@@ -7,7 +7,7 @@ cbuffer LightBuffer
 	float4 gSpecularColor;
 }
 
-Texture2D mappedSRV;
+Texture2D mappedSRV[2];
 SamplerState ss;
 
 struct PixelIn
@@ -20,7 +20,11 @@ struct PixelIn
 
 float4 PS(PixelIn pin) : SV_TARGET
 {
-	float4 texColor = mappedSRV.Sample(ss, pin.tex);
+	float4 tex0Color = mappedSRV[0].Sample(ss, pin.tex);
+	float4 tex1Color = mappedSRV[1].Sample(ss, pin.tex);
+
+	// set gamma correction to 2.0
+	float4 texColor = tex0Color*tex1Color*2.0f;
 
 	float4 lightColor = gAmbientColor;
 

@@ -22,6 +22,8 @@ public:
 	void GetMouseLocation(int& mouseX, int& mouseY);
 
 	bool IsEscapePressed() const;
+	bool IsUpArrowPressed() const;
+	bool IsDownArrowPressed() const;
 	bool IsLeftArrowPressed() const;
 	bool IsRightArrowPressed() const;
 
