@@ -26,13 +26,61 @@ float Position::GetRotation() const
 	return mRotY;
 }
 
+float Position::GetPosition() const
+{
+	return mPosZ;
+}
+
+void Position::GoAhead(bool keydown)
+{
+	if (keydown)
+	{
+		mGoAheadSpeed += mFrameTime*0.01f;
+		float max = mFrameTime * POSITION_SPEED_Ratio;
+		if (mGoAheadSpeed > max)
+			mGoAheadSpeed = max;
+	}
+	else
+	{
+		mGoAheadSpeed -= mFrameTime*0.005f;
+		if (mGoAheadSpeed < 0.0f)
+			mGoAheadSpeed = 0.0f;
+	}
+
+	mPosZ += mGoAheadSpeed;
+	if (mPosZ > 20.0f)
+		mPosZ = 20.0f;
+}
+
+void Position::GoBack(bool keydown)
+{
+	if (keydown)
+	{
+		mGoBackSpeed += mFrameTime*0.01f;
+		float max = mFrameTime * POSITION_SPEED_Ratio;
+		if (mGoBackSpeed > max)
+			mGoBackSpeed = max;
+	}
+	else
+	{
+		mGoBackSpeed -= mFrameTime*0.005f;
+		if (mGoBackSpeed < 0.0f)
+			mGoBackSpeed = 0.0f;
+	}
+
+	mPosZ -= mGoBackSpeed;
+	if (mPosZ < -20.0f)
+		mPosZ = -20.0f;
+}
+
 void Position::TurnLeft(bool keydown)
 {
 	if (keydown)
 	{
 		mLeftTurnSpeed += mFrameTime * 0.01f;
-		if (mLeftTurnSpeed > (mFrameTime * 0.15f))
-			mLeftTurnSpeed = mFrameTime * 0.15f;
+		float max = mFrameTime * POSITION_SPEED_Ratio;
+		if (mLeftTurnSpeed > max)
+			mLeftTurnSpeed = max;
 	}
 	else
 	{
@@ -51,8 +99,9 @@ void Position::TurnRight(bool keydown)
 	if (keydown)
 	{
 		mRightTurnSpeed += mFrameTime * 0.01f;
-		if (mRightTurnSpeed > (mFrameTime * 0.15f))
-			mRightTurnSpeed = mFrameTime * 0.15f;
+		float max = mFrameTime * POSITION_SPEED_Ratio;
+		if (mRightTurnSpeed > max)
+			mRightTurnSpeed = max;
 	}
 	else
 	{

@@ -13,7 +13,7 @@
 #include "Shader.h"
 
 const bool GRAPHICS_FULL_SCREEN = false;
-const bool GRAPHICS_VSYNC_ENABLE = false;
+const bool GRAPHICS_VSYNC_ENABLE = true;
 const float GRAPHICS_SCREEN_DEPTH = 1000.0f;
 const float GRAPHICS_SCREEN_NEAR = 1.0f;
 
@@ -25,7 +25,7 @@ public:
 	~Graphics();
 
 	bool Init(HWND hwnd, int width, int height);
-	bool Frame(float dt, int fps, int cpuRate, float rotY);
+	bool Frame(float dt, int fps, int cpuRate, float rotY, float posZ);
 	bool Render();
 	void Shutdown();
 

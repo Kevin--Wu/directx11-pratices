@@ -24,7 +24,7 @@ float4 PS(PixelIn pin) : SV_TARGET
 	float4 tex1Color = mappedSRV[1].Sample(ss, pin.tex);
 
 	// set gamma correction to 2.0
-	float4 texColor = tex0Color*tex1Color*2.0f;
+	float4 texColor = saturate(tex0Color*tex1Color*2.0f);
 
 	float4 lightColor = gAmbientColor;
 

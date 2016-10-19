@@ -39,7 +39,7 @@ private:
 	Sound* mSound;
 	Graphics* mGraphics;
 	Performance* mPerformance;
-	Position* mPositon;
+	Position* mPosition;
 };
 
 static System* gApp = nullptr;

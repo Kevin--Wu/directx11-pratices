@@ -91,12 +91,12 @@ void Graphics::Shutdown()
 	}
 }
 
-bool Graphics::Frame(float dt, int fps, int cpuRate, float rotY)
+bool Graphics::Frame(float dt, int fps, int cpuRate, float rotY, float posZ)
 {
 	mText->SetFps(fps);
 	mText->SetCpuRate(cpuRate);
 
-	mCamera->SetPosition(0.0f, 0.0f, -10.0f);
+	mCamera->SetPosition(0.0f, 0.0f, -10.0f + posZ);
 	mCamera->SetRotation(0.0f, rotY, 0.0f);
 
 	return true;

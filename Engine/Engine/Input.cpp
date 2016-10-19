@@ -121,6 +121,22 @@ bool Input::IsEscapePressed() const
 	return false;
 }
 
+bool Input::IsUpArrowPressed() const
+{
+	if (mKeyboardState[DIK_UPARROW] & 0x80)
+		return true;
+
+	return false;
+}
+
+bool Input::IsDownArrowPressed() const
+{
+	if (mKeyboardState[DIK_DOWNARROW] & 0x80)
+		return true;
+
+	return false;
+}
+
 bool Input::IsLeftArrowPressed() const
 {
 	if (mKeyboardState[DIK_LEFTARROW] & 0x80)
