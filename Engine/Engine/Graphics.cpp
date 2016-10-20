@@ -39,11 +39,11 @@ bool Graphics::Init(HWND hwnd, int width, int height)
 	mLight->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	mModel = new Model;
-	WCHAR* textureNames[2] = { L"Textures/dirt01.dds" , L"Textures/stone01.dds" };
-	Check(mModel->Init(mD3D->GetDevice(), "Models/sphere.txt", textureNames, 2));
+	WCHAR* textureNames[3] = { L"Textures/dirt01.dds" , L"Textures/stone01.dds", L"Textures/light02.dds" };
+	Check(mModel->Init(mD3D->GetDevice(), "Models/cube.txt", textureNames, 3));
 
 	mModelList = new ModelList;
-	Check(mModelList->Init(100));
+	Check(mModelList->Init(1));
 
 	mText = new Text;
 	mText->Init(mD3D->GetDevice(), mD3D->GetDeviceContext(), hwnd, width, height, "Fonts/fontdata.txt", L"Fonts/font.dds", 32, mCamera->GetViewMatrix());
@@ -116,36 +116,18 @@ bool Graphics::Render()
 	XMFLOAT4X4 ortho = mD3D->GetOrthoMatrix();
 
 	// Construct frustum ready to clip outside object.
-	mFrustum->ConstructFrustum(GRAPHICS_SCREEN_DEPTH, proj, view);
+	// mFrustum->ConstructFrustum(GRAPHICS_SCREEN_DEPTH, proj, view);
 
 	////////////////////////////////////////////////////////////////////////
 	// 3D Model Rendering
 	////////////////////////////////////////////////////////////////////////
-	float radius = 1.0f;
-	XMMATRIX w = XMLoadFloat4x4(&world);
-	int modelCount = mModelList->GetModelCount();
-	int renderCount = 0;
-	float posX, posY, posZ;
-	XMFLOAT4 color;
-	for (int i = 0; i < modelCount; ++i)
-	{
-		// Get the position and color of the sphere model at this index.
-		mModelList->GetModelData(i, posX, posY, posZ, color);
-		if (mFrustum->CheckCube(posX, posY, posZ, radius))
-		{
-			w *= XMMatrixTranslation(posX, posY, posZ);
-			XMFLOAT4X4 newWorld;
-			XMStoreFloat4x4(&newWorld, w);
-			// IA stage
-			mModel->Render(mD3D->GetDeviceContext());
-			// DrawIndexed
-			mShader->Render(mD3D->GetDeviceContext(), mModel->GetIndexCount(), newWorld, view, proj, mModel->GetTextureArray(), mLight->GetAmbientColor(), mLight->GetDiffuseColor(), mLight->GetDiffuseDir(), mLight->GetSpecularPower(), mLight->GetSpecularColor(), mCamera->GetPosition());
-			// Before rendering the next sphere, we reset the world matrix
-			w = mD3D->GetWorldMatrixXM();
-			// Count the number of rendered sphere
-			++renderCount;
-		}
-	}
+	
+	ID3D11DeviceContext* context = mD3D->GetDeviceContext();
+	// IA Set VB, IB, Primitive's Type
+	mModel->Render(context);
+
+	mShader->Render(context, mModel->GetIndexCount(), world, view, proj, mModel->GetTextureArray(), mLight->GetAmbientColor(), mLight->GetDiffuseColor(), mLight->GetDiffuseDir(), mLight->GetSpecularPower(), mLight->GetSpecularColor(), mCamera->GetPosition());
+
 
 	////////////////////////////////////////////////////////////////////////
 	// 2D Font Rendering
@@ -164,11 +146,11 @@ bool Graphics::Render()
 	mText->Render(mD3D->GetDeviceContext(), cardName, 20, 60, XMFLOAT3(1.0f, 0.0f, 0.0f), world, ortho);
 	
 	// Show the counts of rendered spheres.
-	char renderCountsStr[32] = "Render Counts:";
-	char tmp[8];
-	_itoa_s(renderCount, tmp, 10);
-	strcat_s(renderCountsStr, tmp);
-	mText->Render(mD3D->GetDeviceContext(), renderCountsStr, 20, 80, XMFLOAT3(1.0f, 0.0f, 0.0f), world, ortho);
+	//char renderCountsStr[32] = "Render Counts:";
+	//char tmp[8];
+	//_itoa_s(renderCount, tmp, 10);
+	//strcat_s(renderCountsStr, tmp);
+	//mText->Render(mD3D->GetDeviceContext(), renderCountsStr, 20, 80, XMFLOAT3(1.0f, 0.0f, 0.0f), world, ortho);
 
 	// After rendering 2D objects, restore render states.
 	mD3D->TurnBlendOff();

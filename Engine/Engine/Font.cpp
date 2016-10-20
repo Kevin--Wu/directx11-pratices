@@ -18,7 +18,6 @@ bool Font::Init(ID3D11Device* device, char* fontFileName, WCHAR* textureName)
 {
 	Check(LoadFontData(fontFileName));
 
-	// Load Texture
 	mTexture = new Texture;
 	Check(mTexture->Init(device, textureName));
 

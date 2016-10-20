@@ -12,6 +12,9 @@
 #include "Frustum.h"
 #include "Shader.h"
 
+
+const int GRAPHICS_SCREEN_WIDTH = 1024;
+const int GRAPHICS_SCREEN_HEIGHT = 768;
 const bool GRAPHICS_FULL_SCREEN = false;
 const bool GRAPHICS_VSYNC_ENABLE = true;
 const float GRAPHICS_SCREEN_DEPTH = 1000.0f;

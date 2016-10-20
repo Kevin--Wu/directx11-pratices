@@ -200,7 +200,7 @@ bool Shader::SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world,
 	context->Unmap(mCameraBuffer, 0);
 	context->VSSetConstantBuffers(1, 1, &mCameraBuffer);
 
-	context->PSSetShaderResources(0, 2, textureArray);
+	context->PSSetShaderResources(0, 3, textureArray);
 
 	return true;
 }

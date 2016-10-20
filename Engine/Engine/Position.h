@@ -1,7 +1,7 @@
 #ifndef _POSITION_H_
 #define _POSITION_H_
 
-#define POSITION_SPEED_Ratio 0.01f
+#define POSITION_SPEED_Ratio 0.03f
 
 #include <cmath>
 

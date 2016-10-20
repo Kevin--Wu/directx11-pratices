@@ -176,8 +176,8 @@ void System::InitWindow(/*out*/int& width, /*out*/int& height)
 	}
 	else
 	{
-		width = 800;
-		height = 600;
+		width = GRAPHICS_SCREEN_WIDTH;
+		height = GRAPHICS_SCREEN_HEIGHT;
 		posX = (GetSystemMetrics(SM_CXSCREEN) - width) / 2;
 		posY = (GetSystemMetrics(SM_CYSCREEN) - height) / 2;
 	}
