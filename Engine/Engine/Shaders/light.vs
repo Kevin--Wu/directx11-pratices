@@ -42,6 +42,12 @@ VertexOut VS(VertexIn vin)
 	vout.normal = mul(vin.normal, (float3x3)gWorld);
 	vout.normal = normalize(vout.normal);
 
+	vout.tangent = mul(vin.tangent, (float3x3)gWorld);
+	vout.tangent = normalize(vout.tangent); 
+
+	vout.binormal = mul(vin.binormal, (float3x3)gWorld);
+	vout.binormal = normalize(vout.binormal); 
+
 	float4 worldPos = mul(vin.pos, gWorld);
 	vout.viewDir = gCameraPos.xyz - worldPos.xyz;
 	vout.viewDir = normalize(vout.viewDir);

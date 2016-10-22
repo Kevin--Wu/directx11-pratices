@@ -34,21 +34,19 @@ float4 PS(PixelIn pin) : SV_TARGET
 
 	float3 dir = -gDiffuseDir;
 	float intensity = saturate(dot(dir, bumpNormal));
+	
+	float4 color = saturate(gDiffuseColor*intensity); 
+	
+	color = texColor * color;
 
-	float3 reflection;
-	float4 specular;
 	if(intensity > 0.0f)
 	{
-		lightColor += intensity * gDiffuseColor;
-		reflection = normalize(2 * intensity * pin.normal - dir);
-
-		specular = pow(saturate(dot(reflection, pin.viewDir)), gSpecularPower);
+		float4 specularIntensity = mappedSRV[1].Sample(ss, pin.tex);
+		float3 reflection = normalize(2*intensity*bumpNormal - dir);
+		float4 specular = pow(saturate(dot(reflection, pin.viewDir)), gSpecularPower);
+		specular = specular * specularIntensity;
+		color = saturate(color + specular);
 	}
-	
-
-	lightColor = saturate(lightColor);
-
-	float4 color = lightColor * texColor + specular;
 
 	return color;
 }
