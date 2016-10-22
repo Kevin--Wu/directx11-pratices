@@ -39,7 +39,7 @@ bool Graphics::Init(HWND hwnd, int width, int height)
 	mLight->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	mModel = new Model;
-	WCHAR* textureNames[3] = { L"Textures/dirt01.dds" , L"Textures/stone01.dds", L"Textures/light02.dds" };
+	WCHAR* textureNames[3] = { L"Textures/stone01.dds" , L"Textures/dirt01.dds", L"Textures/stone-bump.dds" };
 	Check(mModel->Init(mD3D->GetDevice(), "Models/cube.txt", textureNames, 3));
 
 	mModelList = new ModelList;
@@ -99,6 +99,14 @@ bool Graphics::Frame(float dt, int fps, int cpuRate, float rotY, float posZ)
 	mCamera->SetPosition(0.0f, 0.0f, -10.0f + posZ);
 	mCamera->SetRotation(0.0f, rotY, 0.0f);
 
+	static float angle = 0.0f;
+	angle += XM_PI * 0.0025f;
+	if (angle >= 6.28f)
+		angle = 0.0f;
+
+	XMMATRIX rotate = XMMatrixRotationX(angle) * XMMatrixRotationY(angle) * XMMatrixRotationZ(angle);
+	mD3D->SetWorldMatrix(rotate);
+
 	return true;
 }
 
@@ -114,6 +122,9 @@ bool Graphics::Render()
 	XMFLOAT4X4 view = mCamera->GetViewMatrix();
 	XMFLOAT4X4 proj = mD3D->GetProjMatrix();
 	XMFLOAT4X4 ortho = mD3D->GetOrthoMatrix();
+
+	XMMATRIX scale = XMMatrixScaling(5.0f, 5.0f, 5.0f);
+	XMStoreFloat4x4(&world, XMLoadFloat4x4(&world) * scale);
 
 	// Construct frustum ready to clip outside object.
 	// mFrustum->ConstructFrustum(GRAPHICS_SCREEN_DEPTH, proj, view);
@@ -132,18 +143,22 @@ bool Graphics::Render()
 	////////////////////////////////////////////////////////////////////////
 	// 2D Font Rendering
 	////////////////////////////////////////////////////////////////////////
+	XMMATRIX I_XM = XMMatrixIdentity();
+	XMFLOAT4X4 I;
+	XMStoreFloat4x4(&I, I_XM);
+
 	// Before rendering 2D objects, disable depth test and turn on blending.
 	mD3D->TurnDepthOff();
 	mD3D->TurnBlendOn();
 
 	// Render fps and using rate of cpu.
-	mText->ShowPerformance(mD3D->GetDeviceContext(), world, ortho);
+	mText->ShowPerformance(mD3D->GetDeviceContext(), I, ortho);
 
 	// Render primary card name.
 	char cardName[128];
 	int cardMemory = 0;
 	mD3D->GetVideoCardInfo(cardName, cardMemory);
-	mText->Render(mD3D->GetDeviceContext(), cardName, 20, 60, XMFLOAT3(1.0f, 0.0f, 0.0f), world, ortho);
+	mText->Render(mD3D->GetDeviceContext(), cardName, 20, 60, XMFLOAT3(1.0f, 0.0f, 0.0f), I, ortho);
 	
 	// Show the counts of rendered spheres.
 	//char renderCountsStr[32] = "Render Counts:";

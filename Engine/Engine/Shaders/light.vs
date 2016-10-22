@@ -16,6 +16,8 @@ struct VertexIn
 	float4 pos : POSITION;
 	float2 tex : TEXCOORD;
 	float3 normal : NORMAL0;
+	float3 tangent : TANGENT;
+	float3 binormal : BINORMAL;
 };
 
 struct VertexOut
@@ -24,6 +26,8 @@ struct VertexOut
 	float2 tex : TEXCOORD;
 	float3 normal : NORMAL0;
 	float3 viewDir : NORMAL1;
+	float3 tangent : TANGENT;
+	float3 binormal : BINORMAL;
 };
 
 VertexOut VS(VertexIn vin)
