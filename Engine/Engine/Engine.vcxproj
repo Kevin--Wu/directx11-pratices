@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="D3D.h" />
+    <ClInclude Include="DebugWindow.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="FontShader.h" />
     <ClInclude Include="Frustum.h" />
@@ -31,6 +32,7 @@
     <ClInclude Include="ModelList.h" />
     <ClInclude Include="Performance.h" />
     <ClInclude Include="Position.h" />
+    <ClInclude Include="RenderTexture.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="System.h" />
@@ -47,6 +49,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="D3D.cpp" />
+    <ClCompile Include="DebugWindow.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FontShader.cpp" />
     <ClCompile Include="Frustum.cpp" />
@@ -58,6 +61,7 @@
     <ClCompile Include="ModelList.cpp" />
     <ClCompile Include="Performance.cpp" />
     <ClCompile Include="Position.cpp" />
+    <ClCompile Include="RenderTexture.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="System.cpp" />

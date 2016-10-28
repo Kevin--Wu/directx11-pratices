@@ -39,7 +39,7 @@ bool Graphics::Init(HWND hwnd, int width, int height)
 	mLight->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	mModel = new Model;
-	WCHAR* textureNames[3] = { L"Textures/stone01.dds" , L"Textures/specularMap.dds", L"Textures/bumpMap01.dds" };
+	WCHAR* textureNames[3] = { L"Textures/stone01.dds" , L"Textures/specularMap.dds", L"Textures/bumpMap02.dds" };
 	Check(mModel->Init(mD3D->GetDevice(), "Models/cube.txt", textureNames, 3));
 
 	mModelList = new ModelList;
