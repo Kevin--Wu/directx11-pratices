@@ -48,8 +48,8 @@ void Position::GoAhead(bool keydown)
 	}
 
 	mPosZ += mGoAheadSpeed;
-	if (mPosZ > 20.0f)
-		mPosZ = 20.0f;
+	if (mPosZ > 5.0f)
+		mPosZ = 5.0f;
 }
 
 void Position::GoBack(bool keydown)
@@ -69,8 +69,8 @@ void Position::GoBack(bool keydown)
 	}
 
 	mPosZ -= mGoBackSpeed;
-	if (mPosZ < -20.0f)
-		mPosZ = -20.0f;
+	if (mPosZ < -50.0f)
+		mPosZ = -50.0f;
 }
 
 void Position::TurnLeft(bool keydown)
@@ -89,9 +89,9 @@ void Position::TurnLeft(bool keydown)
 			mLeftTurnSpeed = 0.0f;
 	}
 
-	mRotY -= mLeftTurnSpeed;
-	if (mRotY < 0.0f)
-		mRotY += 360.0f;
+	mRotY += mLeftTurnSpeed;
+	if (mRotY > 360.0f)
+		mRotY -= 360.0f;
 }
 
 void Position::TurnRight(bool keydown)
@@ -110,7 +110,7 @@ void Position::TurnRight(bool keydown)
 			mRightTurnSpeed = 0.0f;
 	}
 
-	mRotY += mRightTurnSpeed;
-	if (mRotY > 360.0f)
-		mRotY -= 360.0f;
+	mRotY -= mRightTurnSpeed;
+	if (mRotY < 0.0f)
+		mRotY += 360.0f;
 }

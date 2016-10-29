@@ -9,6 +9,7 @@ Graphics::Graphics()
 	mLight = nullptr;
 	mCamera = nullptr;
 	mFrustum = nullptr;
+	mFogShader = nullptr;
 	mLightShader = nullptr;
 	mTextureShader = nullptr;
 	mRenderTexture = nullptr;
@@ -51,6 +52,9 @@ bool Graphics::Init(HWND hwnd, int width, int height)
 	mText = new Text;
 	mText->Init(mD3D->GetDevice(), mD3D->GetDeviceContext(), hwnd, width, height, "Fonts/fontdata.txt", L"Fonts/font.dds", 32, mCamera->GetViewMatrix());
 
+	mFogShader = new FogShader;
+	Check(mFogShader->Init(hwnd, mD3D->GetDevice()));
+
 	mLightShader = new LightShader;
 	Check(mLightShader->Init(hwnd, mD3D->GetDevice()));
 
@@ -61,7 +65,7 @@ bool Graphics::Init(HWND hwnd, int width, int height)
 	mRenderTexture->Init(mD3D->GetDevice(), width, height);
 
 	mDebugWindow = new DebugWindow;
-	Check(mDebugWindow->Init(mD3D->GetDevice(), width, height, 200, 150));
+	Check(mDebugWindow->Init(mD3D->GetDevice(), width, height, 300, 225));
 
 	return true;
 }
@@ -78,6 +82,12 @@ void Graphics::Shutdown()
 	{
 		mRenderTexture->Shutdown();
 		SafeDelete(mRenderTexture);
+	}
+
+	if (mFogShader)
+	{
+		mFogShader->Shutdown();
+		SafeDelete(mFogShader);
 	}
 
 	if (mLightShader)
@@ -150,9 +160,10 @@ bool Graphics::Render()
 	////////////////////////////////////////////////////////////////////////
 	// 3D Model Rendering
 	////////////////////////////////////////////////////////////////////////
-	mD3D->BeginScene(0.6f, 0.74f, 0.92f, 1.0f);
+	float fogColor = 0.7f;
+	mD3D->BeginScene(fogColor, fogColor, fogColor, 1.0f);
 	Check(RenderScene());
-	mDebugWindow->Render(mD3D->GetDeviceContext(), 824, 0);
+	mDebugWindow->Render(mD3D->GetDeviceContext(), 724, 0);
 	mTextureShader->Render(mD3D->GetDeviceContext(), mDebugWindow->GetIndexCount(), world, mText->GetBaseViewMatrix(), ortho, mRenderTexture->GetShaderResourceView());
 	////////////////////////////////////////////////////////////////////////
 	// 2D Font Rendering
@@ -207,14 +218,16 @@ bool Graphics::RenderScene()
 	ID3D11DeviceContext* context = mD3D->GetDeviceContext();
 	// IA Set VB, IB, Primitive's Type
 	mModel->Render(context);
-	Check(mLightShader->Render(context, mModel->GetIndexCount(), world, view, proj, mModel->GetTextureArray(), mLight->GetAmbientColor(), mLight->GetDiffuseColor(), mLight->GetDiffuseDir(), mLight->GetSpecularPower(), mLight->GetSpecularColor(), mCamera->GetPosition()));
+	// Check(mLightShader->Render(context, mModel->GetIndexCount(), world, view, proj, mModel->GetTextureArray(), mLight->GetAmbientColor(), mLight->GetDiffuseColor(), mLight->GetDiffuseDir(), mLight->GetSpecularPower(), mLight->GetSpecularColor(), mCamera->GetPosition()));
+	ID3D11ShaderResourceView** texArray = mModel->GetTextureArray();
+	Check(mFogShader->Render(context, mModel->GetIndexCount(), world, view, proj, texArray[0], 0.0f, 30.0f));
 	return true;
 }
 
 bool Graphics::RenderToTexture()
 {
 	mRenderTexture->SetRenderTarget(mD3D->GetDeviceContext(), mD3D->GetDepthStencilView());
-	mRenderTexture->ClearRenderTarget(mD3D->GetDeviceContext(), mD3D->GetDepthStencilView(), 0.0f, 1.0f, 0.0f, 1.0f);
+	mRenderTexture->ClearRenderTarget(mD3D->GetDeviceContext(), mD3D->GetDepthStencilView(), 0.87f, 0.95f, 0.91f, 1.0f);
 	Check(RenderScene());
 	mD3D->SetBackBufferRenderTarget();
 	return true;

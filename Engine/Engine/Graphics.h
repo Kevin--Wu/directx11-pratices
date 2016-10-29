@@ -10,6 +10,7 @@
 #include "Light.h"
 #include "Camera.h"
 #include "Frustum.h"
+#include "FogShader.h"
 #include "LightShader.h"
 #include "TextureShader.h"
 #include "RenderTexture.h"
@@ -44,6 +45,7 @@ private:
 	Light*  mLight;
 	Camera* mCamera;
 	Frustum* mFrustum;
+	FogShader* mFogShader;
 	LightShader* mLightShader;
 	TextureShader* mTextureShader;
 	RenderTexture* mRenderTexture;

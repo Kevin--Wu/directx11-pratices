@@ -102,6 +102,9 @@
     <ClInclude Include="LightShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FogShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -185,6 +188,9 @@
     <ClCompile Include="LightShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FogShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\light.ps">
@@ -203,6 +209,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="Shaders\texture.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\fog.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\fog.vs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

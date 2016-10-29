@@ -22,6 +22,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="D3D.h" />
     <ClInclude Include="DebugWindow.h" />
+    <ClInclude Include="FogShader.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="FontShader.h" />
     <ClInclude Include="Frustum.h" />
@@ -51,6 +52,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="D3D.cpp" />
     <ClCompile Include="DebugWindow.cpp" />
+    <ClCompile Include="FogShader.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FontShader.cpp" />
     <ClCompile Include="Frustum.cpp" />
@@ -77,6 +79,8 @@
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\fog.ps" />
+    <None Include="Shaders\fog.vs" />
     <None Include="Shaders\font.ps" />
     <None Include="Shaders\font.vs" />
     <None Include="Shaders\light.ps" />
