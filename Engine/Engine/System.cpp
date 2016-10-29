@@ -130,7 +130,6 @@ bool System::Frame()
 
 	Check(mGraphics->Frame(mTimer->GetFrameTime(), mPerformance->GetFps(), mPerformance->GetCpuRate(), rotY, posZ));
 	Check(mGraphics->Render());
-
 	return true;
 }
 

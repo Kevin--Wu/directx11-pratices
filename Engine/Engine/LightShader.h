@@ -1,5 +1,5 @@
-#ifndef _SHADER_H_
-#define _SHADER_H_
+#ifndef _LIGHTSHADER_H_
+#define _LIGHTSHADER_H_
 
 #include <d3d11.h>
 #include <fstream>
@@ -11,7 +11,7 @@ using namespace DirectX;
 
 #pragma comment(lib, "D3Dcompiler.lib")
 
-class Shader
+class LightShader
 {
 private:
 	struct MatrixBuffer
@@ -37,9 +37,9 @@ private:
 	};
 
 public:
-	Shader();
-	Shader(const Shader& other);
-	~Shader();
+	LightShader();
+	LightShader(const LightShader& other);
+	~LightShader();
 
 	bool Init(HWND hwnd, ID3D11Device* device);
 	bool Render(ID3D11DeviceContext* context, int indexCount, XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView** textureArray, XMFLOAT4 ambientColor, XMFLOAT4 lightColor, XMFLOAT3 lightDir, float specularPower, XMFLOAT4 specularColor, XMFLOAT3 cameraPos);
@@ -50,7 +50,7 @@ private:
 	void RenderShader(ID3D11DeviceContext* context, int indexCount);
 	void ShutdownShader();
 
-	void OutputShaderErrorMessage(HWND hwnd, ID3D10Blob* blob, WCHAR*);
+	void OutputShaderErrorMessage(HWND hwnd, ID3D10Blob* blob, WCHAR* path);
 
 	bool SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView** textureArray, XMFLOAT4 ambientColor, XMFLOAT4 lightColor, XMFLOAT3 lightDir, float specularPower, XMFLOAT4 specularColor, XMFLOAT3 cameraPos);
 

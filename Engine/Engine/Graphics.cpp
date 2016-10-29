@@ -9,7 +9,10 @@ Graphics::Graphics()
 	mLight = nullptr;
 	mCamera = nullptr;
 	mFrustum = nullptr;
-	mShader = nullptr;
+	mLightShader = nullptr;
+	mTextureShader = nullptr;
+	mRenderTexture = nullptr;
+	mDebugWindow = nullptr;
 }
 
 Graphics::Graphics(const Graphics& other)
@@ -48,18 +51,45 @@ bool Graphics::Init(HWND hwnd, int width, int height)
 	mText = new Text;
 	mText->Init(mD3D->GetDevice(), mD3D->GetDeviceContext(), hwnd, width, height, "Fonts/fontdata.txt", L"Fonts/font.dds", 32, mCamera->GetViewMatrix());
 
-	mShader = new Shader;
-	Check(mShader->Init(hwnd, mD3D->GetDevice()));
+	mLightShader = new LightShader;
+	Check(mLightShader->Init(hwnd, mD3D->GetDevice()));
+
+	mTextureShader = new TextureShader;
+	Check(mTextureShader->Init(hwnd, mD3D->GetDevice()));
+
+	mRenderTexture = new RenderTexture;
+	mRenderTexture->Init(mD3D->GetDevice(), width, height);
+
+	mDebugWindow = new DebugWindow;
+	Check(mDebugWindow->Init(mD3D->GetDevice(), width, height, 100, 100));
 
 	return true;
 }
 
 void Graphics::Shutdown()
 {
-	if (mShader)
+	if (mDebugWindow)
 	{
-		mShader->Shutdown();
-		SafeDelete(mShader);
+		mDebugWindow->Shutdown();
+		SafeDelete(mDebugWindow);
+	}
+
+	if (mRenderTexture)
+	{
+		mRenderTexture->Shutdown();
+		SafeDelete(mRenderTexture);
+	}
+
+	if (mLightShader)
+	{
+		mLightShader->Shutdown();
+		SafeDelete(mLightShader);
+	}
+
+	if (mTextureShader)
+	{
+		mTextureShader->Shutdown();
+		SafeDelete(mTextureShader);
 	}
 
 	if (mModelList)
@@ -99,66 +129,46 @@ bool Graphics::Frame(float dt, int fps, int cpuRate, float rotY, float posZ)
 	mCamera->SetPosition(0.0f, 0.0f, -10.0f + posZ);
 	mCamera->SetRotation(0.0f, rotY, 0.0f);
 
-	static float angle = 0.0f;
-	angle += XM_PI * 0.0025f;
-	if (angle >= 6.28f)
-		angle = 0.0f;
-
-	XMMATRIX rotate = XMMatrixRotationX(angle) * XMMatrixRotationY(angle) * XMMatrixRotationZ(angle);
-	//mD3D->SetWorldMatrix(rotate);
+	// After call Frame func, re-calculate the new view matrix.
+	mCamera->Render();
 
 	return true;
 }
 
 bool Graphics::Render()
 {
-	mD3D->BeginScene(0.6f, 0.74f, 0.92f, 1.0f);
-
-	// After call Frame func, re-calculate the new view matrix.
-	mCamera->Render();
-
 	// Base 3D matrix
 	XMFLOAT4X4 world = mD3D->GetWorldMatrix();
 	XMFLOAT4X4 view = mCamera->GetViewMatrix();
 	XMFLOAT4X4 proj = mD3D->GetProjMatrix();
 	XMFLOAT4X4 ortho = mD3D->GetOrthoMatrix();
 
-	XMMATRIX scale = XMMatrixScaling(5.0f, 5.0f, 5.0f);
-	XMStoreFloat4x4(&world, XMLoadFloat4x4(&world) * scale);
-
+	Check(RenderToTexture());
 	// Construct frustum ready to clip outside object.
 	// mFrustum->ConstructFrustum(GRAPHICS_SCREEN_DEPTH, proj, view);
 
 	////////////////////////////////////////////////////////////////////////
 	// 3D Model Rendering
 	////////////////////////////////////////////////////////////////////////
-	
-	ID3D11DeviceContext* context = mD3D->GetDeviceContext();
-	// IA Set VB, IB, Primitive's Type
-	mModel->Render(context);
-
-	mShader->Render(context, mModel->GetIndexCount(), world, view, proj, mModel->GetTextureArray(), mLight->GetAmbientColor(), mLight->GetDiffuseColor(), mLight->GetDiffuseDir(), mLight->GetSpecularPower(), mLight->GetSpecularColor(), mCamera->GetPosition());
-
-
+	mD3D->BeginScene(0.6f, 0.74f, 0.92f, 1.0f);
+	Check(RenderScene());
+	mDebugWindow->Render(mD3D->GetDeviceContext(), 50, 50);
+	mTextureShader->Render(mD3D->GetDeviceContext(), mDebugWindow->GetIndexCount(), world, view, ortho, mRenderTexture->GetShaderResourceView());
 	////////////////////////////////////////////////////////////////////////
 	// 2D Font Rendering
 	////////////////////////////////////////////////////////////////////////
-	XMMATRIX I_XM = XMMatrixIdentity();
-	XMFLOAT4X4 I;
-	XMStoreFloat4x4(&I, I_XM);
-
 	// Before rendering 2D objects, disable depth test and turn on blending.
 	mD3D->TurnDepthOff();
 	mD3D->TurnBlendOn();
 
 	// Render fps and using rate of cpu.
-	mText->ShowPerformance(mD3D->GetDeviceContext(), I, ortho);
+	mText->ShowPerformance(mD3D->GetDeviceContext(), world, ortho);
 
 	// Render primary card name.
 	char cardName[128];
 	int cardMemory = 0;
 	mD3D->GetVideoCardInfo(cardName, cardMemory);
-	mText->Render(mD3D->GetDeviceContext(), cardName, 20, 60, XMFLOAT3(1.0f, 0.0f, 0.0f), I, ortho);
+	Check(mText->Render(mD3D->GetDeviceContext(), cardName, 20, 60, XMFLOAT3(1.0f, 0.0f, 0.0f), world, ortho));
 	
 	// Show the counts of rendered spheres.
 	//char renderCountsStr[32] = "Render Counts:";
@@ -174,5 +184,38 @@ bool Graphics::Render()
 	// Swap chain present.
 	mD3D->EndScene();
 
+	return true;
+}
+
+bool Graphics::RenderScene()
+{
+	static float angle = 0.0f;
+	angle += XM_PI * 0.0025f;
+	if (angle >= 6.28f)
+		angle = 0.0f;
+
+	XMMATRIX rotate = XMMatrixRotationX(angle) * XMMatrixRotationY(angle) * XMMatrixRotationZ(angle);
+
+	// Base 3D matrix
+	XMFLOAT4X4 world = mD3D->GetWorldMatrix();
+	XMFLOAT4X4 view = mCamera->GetViewMatrix();
+	XMFLOAT4X4 proj = mD3D->GetProjMatrix();
+
+	XMMATRIX scale = XMMatrixScaling(5.0f, 5.0f, 5.0f);
+	XMStoreFloat4x4(&world, XMLoadFloat4x4(&world) * scale * rotate);
+
+	ID3D11DeviceContext* context = mD3D->GetDeviceContext();
+	// IA Set VB, IB, Primitive's Type
+	mModel->Render(context);
+	Check(mLightShader->Render(context, mModel->GetIndexCount(), world, view, proj, mModel->GetTextureArray(), mLight->GetAmbientColor(), mLight->GetDiffuseColor(), mLight->GetDiffuseDir(), mLight->GetSpecularPower(), mLight->GetSpecularColor(), mCamera->GetPosition()));
+	return true;
+}
+
+bool Graphics::RenderToTexture()
+{
+	mRenderTexture->SetRenderTarget(mD3D->GetDeviceContext(), mD3D->GetDepthStencilView());
+	mRenderTexture->ClearRenderTarget(mD3D->GetDeviceContext(), mD3D->GetDepthStencilView(), 0.0f, 1.0f, 0.0f, 1.0f);
+	Check(RenderScene());
+	mD3D->SetBackBufferRenderTarget();
 	return true;
 }

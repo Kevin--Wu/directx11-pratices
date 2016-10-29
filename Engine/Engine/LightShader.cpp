@@ -1,6 +1,6 @@
-#include "Shader.h"
+#include "LightShader.h"
 
-Shader::Shader()
+LightShader::LightShader()
 {
 	mVertexShader = nullptr;
 	mPixelShader = nullptr;
@@ -13,22 +13,22 @@ Shader::Shader()
 	mSampleState = nullptr;
 }
 
-Shader::Shader(const Shader& other)
+LightShader::LightShader(const LightShader& other)
 {
 }
 
-Shader::~Shader()
+LightShader::~LightShader()
 {
 }
 
-bool Shader::Init(HWND hwnd, ID3D11Device* device)
+bool LightShader::Init(HWND hwnd, ID3D11Device* device)
 {
 	Check(InitShader(hwnd, device, L"Shaders/light.vs", L"Shaders/light.ps"));
 
 	return true;
 }
 
-bool Shader::Render(ID3D11DeviceContext* context, int indexCount, 
+bool LightShader::Render(ID3D11DeviceContext* context, int indexCount,
 	XMFLOAT4X4 world, XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView** textureArray,
 	XMFLOAT4 ambientColor, XMFLOAT4 lightColor, XMFLOAT3 lightDir, float specularPower, XMFLOAT4 specularColor,
 	XMFLOAT3 cameraPos)
@@ -40,12 +40,12 @@ bool Shader::Render(ID3D11DeviceContext* context, int indexCount,
 	return true;
 }
 
-void Shader::Shutdown()
+void LightShader::Shutdown()
 {
 	ShutdownShader();
 }
 
-bool Shader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHAR* psPath)
+bool LightShader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHAR* psPath)
 {
 	HRESULT result;
 
@@ -181,7 +181,7 @@ bool Shader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHAR* p
 	return true;
 }
 
-bool Shader::SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world,XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView** textureArray,
+bool LightShader::SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world,XMFLOAT4X4 view, XMFLOAT4X4 proj, ID3D11ShaderResourceView** textureArray,
 	XMFLOAT4 ambientColor, XMFLOAT4 lightColor, XMFLOAT3 lightDir, float specularPower, XMFLOAT4 specularColor, XMFLOAT3 cameraPos)
 {
 	XMMATRIX w = XMMatrixTranspose(XMLoadFloat4x4(&world));
@@ -221,7 +221,7 @@ bool Shader::SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world,
 	return true;
 }
 
-void Shader::RenderShader(ID3D11DeviceContext* context, int indexCount)
+void LightShader::RenderShader(ID3D11DeviceContext* context, int indexCount)
 {
 	context->IASetInputLayout(mLayout);
 
@@ -232,7 +232,7 @@ void Shader::RenderShader(ID3D11DeviceContext* context, int indexCount)
 	context->DrawIndexed(indexCount, 0, 0);
 }
 
-void Shader::ShutdownShader()
+void LightShader::ShutdownShader()
 {
 	ReleaseCOM(mMatrixBuffer);
 	ReleaseCOM(mLightBuffer);
@@ -242,12 +242,12 @@ void Shader::ShutdownShader()
 	ReleaseCOM(mVertexShader);
 }
 
-void Shader::OutputShaderErrorMessage(HWND hwnd, ID3D10Blob* error, WCHAR* path)
+void LightShader::OutputShaderErrorMessage(HWND hwnd, ID3D10Blob* error, WCHAR* path)
 {
 	char* errorInfo = static_cast<char*>(error->GetBufferPointer());
 	SIZE_T size = error->GetBufferSize();
 
-	std::ofstream fout("shader_compile_log.txt", std::ios::out);
+	std::ofstream fout("light_shader_compile_log.txt", std::ios::out);
 	for (unsigned long i = 0; i < size; ++i)
 		fout << errorInfo[i];
 	fout.close();

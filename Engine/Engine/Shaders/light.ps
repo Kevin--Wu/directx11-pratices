@@ -41,6 +41,7 @@ float4 PS(PixelIn pin) : SV_TARGET
 
 	if(intensity > 0.0f)
 	{
+		// specular map
 		float4 specularIntensity = mappedSRV[1].Sample(ss, pin.tex);
 		float3 reflection = normalize(2*intensity*bumpNormal - dir);
 		float4 specular = pow(saturate(dot(reflection, pin.viewDir)), gSpecularPower);

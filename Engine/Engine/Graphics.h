@@ -10,8 +10,10 @@
 #include "Light.h"
 #include "Camera.h"
 #include "Frustum.h"
-#include "Shader.h"
-
+#include "LightShader.h"
+#include "TextureShader.h"
+#include "RenderTexture.h"
+#include "DebugWindow.h"
 
 const int GRAPHICS_SCREEN_WIDTH = 1024;
 const int GRAPHICS_SCREEN_HEIGHT = 768;
@@ -33,12 +35,19 @@ public:
 	void Shutdown();
 
 private:
+	bool RenderScene();
+	bool RenderToTexture();
+
+private:
 	D3D*    mD3D;
 	Timer*  mTimer;
 	Light*  mLight;
 	Camera* mCamera;
 	Frustum* mFrustum;
-	Shader* mShader;
+	LightShader* mLightShader;
+	TextureShader* mTextureShader;
+	RenderTexture* mRenderTexture;
+	DebugWindow* mDebugWindow;
 
 	Text*   mText;
 	Model*  mModel;

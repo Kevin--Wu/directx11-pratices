@@ -45,6 +45,9 @@ public:
 	void TurnBlendOn() const;
 	void TurnBlendOff() const;
 
+	ID3D11DepthStencilView* GetDepthStencilView() const;
+	void SetBackBufferRenderTarget();
+
 private:
 	bool mVsyncEnabled;
 	int mVideoCardMemory;

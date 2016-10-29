@@ -347,6 +347,17 @@ void D3D::GetVideoCardInfo(char* cardName, int& memory) const
 	memory = mVideoCardMemory;
 }
 
+ID3D11DepthStencilView* D3D::GetDepthStencilView() const
+{
+	return mDepthStencilView;
+}
+
+void D3D::SetBackBufferRenderTarget()
+{
+	mDeviceContext->OMSetRenderTargets(1, &mRenderTargetView, mDepthStencilView);
+}
+
+
 void D3D::TurnBlendOn() const
 {
 	float blendFactors[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
