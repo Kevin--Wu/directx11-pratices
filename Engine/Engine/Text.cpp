@@ -198,3 +198,8 @@ void Text::ShowPerformance(ID3D11DeviceContext* context, XMFLOAT4X4 world, XMFLO
 	Render(context, fpsStr, 20, 20, XMFLOAT3(1.0f, 0.0f, 0.0f), world, ortho);
 	Render(context, cpuStr, 20, 40, XMFLOAT3(1.0f, 0.0f, 0.0f), world, ortho);
 }
+
+XMFLOAT4X4 Text::GetBaseViewMatrix() const
+{
+	return mBaseViewMatrix;
+}

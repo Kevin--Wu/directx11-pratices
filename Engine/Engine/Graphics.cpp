@@ -61,7 +61,7 @@ bool Graphics::Init(HWND hwnd, int width, int height)
 	mRenderTexture->Init(mD3D->GetDevice(), width, height);
 
 	mDebugWindow = new DebugWindow;
-	Check(mDebugWindow->Init(mD3D->GetDevice(), width, height, 100, 100));
+	Check(mDebugWindow->Init(mD3D->GetDevice(), width, height, 200, 150));
 
 	return true;
 }
@@ -152,8 +152,8 @@ bool Graphics::Render()
 	////////////////////////////////////////////////////////////////////////
 	mD3D->BeginScene(0.6f, 0.74f, 0.92f, 1.0f);
 	Check(RenderScene());
-	mDebugWindow->Render(mD3D->GetDeviceContext(), 50, 50);
-	mTextureShader->Render(mD3D->GetDeviceContext(), mDebugWindow->GetIndexCount(), world, view, ortho, mRenderTexture->GetShaderResourceView());
+	mDebugWindow->Render(mD3D->GetDeviceContext(), 824, 0);
+	mTextureShader->Render(mD3D->GetDeviceContext(), mDebugWindow->GetIndexCount(), world, mText->GetBaseViewMatrix(), ortho, mRenderTexture->GetShaderResourceView());
 	////////////////////////////////////////////////////////////////////////
 	// 2D Font Rendering
 	////////////////////////////////////////////////////////////////////////

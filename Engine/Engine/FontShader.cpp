@@ -141,8 +141,7 @@ bool FontShader::InitShader(HWND hwnd, ID3D11Device* device, WCHAR* vsPath, WCHA
 	return true;
 }
 
-bool FontShader::SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world,XMFLOAT4X4 view, XMFLOAT4X4 proj, XMFLOAT4 pixelColor,
-	ID3D11ShaderResourceView* texture)
+bool FontShader::SetShaderParameters(ID3D11DeviceContext* context, XMFLOAT4X4 world,XMFLOAT4X4 view, XMFLOAT4X4 proj, XMFLOAT4 pixelColor, ID3D11ShaderResourceView* texture)
 {
 	// Transpose the matrices to prepare them for the shader.
 	XMMATRIX w = XMMatrixTranspose(XMLoadFloat4x4(&world));

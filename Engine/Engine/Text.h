@@ -31,6 +31,7 @@ public:
 	void SetFps(int fps);
 	void SetCpuRate(int cpuRate);
 	void ShowPerformance(ID3D11DeviceContext* context, XMFLOAT4X4 world, XMFLOAT4X4 ortho);
+	XMFLOAT4X4 GetBaseViewMatrix() const;
 
 private:
 	bool InitSentence(ID3D11Device* device, int maxLength);
