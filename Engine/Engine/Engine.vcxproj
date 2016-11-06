@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ClipPlaneShader.h" />
     <ClInclude Include="D3D.h" />
     <ClInclude Include="DebugWindow.h" />
     <ClInclude Include="FogShader.h" />
@@ -50,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ClipPlaneShader.cpp" />
     <ClCompile Include="D3D.cpp" />
     <ClCompile Include="DebugWindow.cpp" />
     <ClCompile Include="FogShader.cpp" />
@@ -79,6 +81,8 @@
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\clip.ps" />
+    <None Include="Shaders\clip.vs" />
     <None Include="Shaders\fog.ps" />
     <None Include="Shaders\fog.vs" />
     <None Include="Shaders\font.ps" />

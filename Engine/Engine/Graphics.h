@@ -13,6 +13,7 @@
 #include "FogShader.h"
 #include "LightShader.h"
 #include "TextureShader.h"
+#include "ClipPlaneShader.h"
 #include "RenderTexture.h"
 #include "DebugWindow.h"
 
@@ -47,6 +48,7 @@ private:
 	Frustum* mFrustum;
 	FogShader* mFogShader;
 	LightShader* mLightShader;
+	ClipPlaneShader* mClipPlaneShader;
 	TextureShader* mTextureShader;
 	RenderTexture* mRenderTexture;
 	DebugWindow* mDebugWindow;

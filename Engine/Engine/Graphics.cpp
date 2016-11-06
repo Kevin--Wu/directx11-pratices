@@ -12,6 +12,7 @@ Graphics::Graphics()
 	mFogShader = nullptr;
 	mLightShader = nullptr;
 	mTextureShader = nullptr;
+	mClipPlaneShader = nullptr;
 	mRenderTexture = nullptr;
 	mDebugWindow = nullptr;
 }
@@ -55,6 +56,9 @@ bool Graphics::Init(HWND hwnd, int width, int height)
 	mFogShader = new FogShader;
 	Check(mFogShader->Init(hwnd, mD3D->GetDevice()));
 
+	mClipPlaneShader = new ClipPlaneShader;
+	Check(mClipPlaneShader->Init(hwnd, mD3D->GetDevice()));
+
 	mLightShader = new LightShader;
 	Check(mLightShader->Init(hwnd, mD3D->GetDevice()));
 
@@ -88,6 +92,12 @@ void Graphics::Shutdown()
 	{
 		mFogShader->Shutdown();
 		SafeDelete(mFogShader);
+	}
+
+	if (mClipPlaneShader)
+	{
+		mClipPlaneShader->Shutdown();
+		SafeDelete(mClipPlaneShader);
 	}
 
 	if (mLightShader)
@@ -160,8 +170,9 @@ bool Graphics::Render()
 	////////////////////////////////////////////////////////////////////////
 	// 3D Model Rendering
 	////////////////////////////////////////////////////////////////////////
-	float fogColor = 0.7f;
-	mD3D->BeginScene(fogColor, fogColor, fogColor, 1.0f);
+//	float fogColor = 0.7f;
+//	mD3D->BeginScene(fogColor, fogColor, fogColor, 1.0f);
+	mD3D->BeginScene(0.8f, 0.8f, 1.0f, 1.0f);
 	Check(RenderScene());
 	mDebugWindow->Render(mD3D->GetDeviceContext(), 724, 0);
 	mTextureShader->Render(mD3D->GetDeviceContext(), mDebugWindow->GetIndexCount(), world, mText->GetBaseViewMatrix(), ortho, mRenderTexture->GetShaderResourceView());
@@ -213,14 +224,23 @@ bool Graphics::RenderScene()
 	XMFLOAT4X4 proj = mD3D->GetProjMatrix();
 
 	XMMATRIX scale = XMMatrixScaling(5.0f, 5.0f, 5.0f);
-	XMStoreFloat4x4(&world, XMLoadFloat4x4(&world) * scale * rotate);
+
+	if(GetAsyncKeyState('1') & 0x8000)
+		XMStoreFloat4x4(&world, XMLoadFloat4x4(&world) * scale * rotate);
+	else
+		XMStoreFloat4x4(&world, XMLoadFloat4x4(&world) * scale);
+
+
 
 	ID3D11DeviceContext* context = mD3D->GetDeviceContext();
 	// IA Set VB, IB, Primitive's Type
 	mModel->Render(context);
-	// Check(mLightShader->Render(context, mModel->GetIndexCount(), world, view, proj, mModel->GetTextureArray(), mLight->GetAmbientColor(), mLight->GetDiffuseColor(), mLight->GetDiffuseDir(), mLight->GetSpecularPower(), mLight->GetSpecularColor(), mCamera->GetPosition()));
 	ID3D11ShaderResourceView** texArray = mModel->GetTextureArray();
-	Check(mFogShader->Render(context, mModel->GetIndexCount(), world, view, proj, texArray[0], 0.0f, 30.0f));
+	//Check(mFogShader->Render(context, mModel->GetIndexCount(), world, view, proj, texArray[0], 0.0f, 30.0f));
+//	mLightShader->Render(context, mModel->GetIndexCount(), world, view, proj, texArray, mLight->GetAmbientColor(), mLight->GetDiffuseColor(), mLight->GetDiffuseDir(), mLight->GetSpecularPower(), mLight->GetSpecularColor(), mCamera->GetPosition());
+	mClipPlaneShader->Render(mD3D->GetDeviceContext(), mDebugWindow->GetIndexCount(), world, view, proj, XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f), texArray[0]);
+
+	
 	return true;
 }
 
