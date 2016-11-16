@@ -238,7 +238,7 @@ bool Graphics::RenderScene()
 	ID3D11ShaderResourceView** texArray = mModel->GetTextureArray();
 	//Check(mFogShader->Render(context, mModel->GetIndexCount(), world, view, proj, texArray[0], 0.0f, 30.0f));
 //	mLightShader->Render(context, mModel->GetIndexCount(), world, view, proj, texArray, mLight->GetAmbientColor(), mLight->GetDiffuseColor(), mLight->GetDiffuseDir(), mLight->GetSpecularPower(), mLight->GetSpecularColor(), mCamera->GetPosition());
-	mClipPlaneShader->Render(mD3D->GetDeviceContext(), mDebugWindow->GetIndexCount(), world, view, proj, XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f), texArray[0]);
+	mClipPlaneShader->Render(mD3D->GetDeviceContext(), mDebugWindow->GetIndexCount(), world, view, proj, XMFLOAT4(0.0f, -1.0f, 0.0f, 0.0f), texArray[0]);
 
 	
 	return true;

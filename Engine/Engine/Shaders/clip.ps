@@ -9,6 +9,8 @@ struct PixelIn
 
 float4 PS(PixelIn pin) : SV_TARGET
 {
+	// tex coordinate transform
+	// pin.tex.x += 0.2f;
 	float4 color = mappedSRV.Sample(ss, pin.tex);
 
 	return color;
